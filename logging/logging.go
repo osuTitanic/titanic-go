@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
-	"os"
 	"strings"
 )
 
@@ -26,31 +25,22 @@ type ColorLogger struct {
 	level slog.Level
 }
 
-func NewLogger(out io.Writer, level slog.Level) *ColorLogger {
+func NewColorLogger(out io.Writer, level slog.Level) *ColorLogger {
 	return &ColorLogger{
 		out:   out,
 		level: level,
 	}
 }
 
+func NewLogger(out io.Writer, level slog.Level) *slog.Logger {
+	handler := NewColorLogger(out, level)
+	return slog.New(handler)
+}
+
 func NewMultiLogger(level slog.Level, writers ...io.Writer) *slog.Logger {
 	multi := io.MultiWriter(writers...)
-	handler := NewLogger(multi, level)
+	handler := NewColorLogger(multi, level)
 	return slog.New(handler)
-}
-
-func NewConsoleLogger(level slog.Level) *slog.Logger {
-	handler := NewLogger(os.Stdout, level)
-	return slog.New(handler)
-}
-
-func NewFileLogger(path string, level slog.Level) (*slog.Logger, error) {
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		return nil, err
-	}
-	handler := NewLogger(file, level)
-	return slog.New(handler), nil
 }
 
 func (h *ColorLogger) Enabled(_ context.Context, level slog.Level) bool {
