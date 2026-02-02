@@ -33,9 +33,24 @@ func NewLogger(out io.Writer, level slog.Level) *ColorLogger {
 	}
 }
 
+func NewMultiLogger(level slog.Level, writers ...io.Writer) *slog.Logger {
+	multi := io.MultiWriter(writers...)
+	handler := NewLogger(multi, level)
+	return slog.New(handler)
+}
+
 func NewConsoleLogger(level slog.Level) *slog.Logger {
 	handler := NewLogger(os.Stdout, level)
 	return slog.New(handler)
+}
+
+func NewFileLogger(path string, level slog.Level) (*slog.Logger, error) {
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		return nil, err
+	}
+	handler := NewLogger(file, level)
+	return slog.New(handler), nil
 }
 
 func (h *ColorLogger) Enabled(_ context.Context, level slog.Level) bool {
