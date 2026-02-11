@@ -49,21 +49,14 @@ type Config struct {
 	ImageProxyBaseUrl string `env:"IMAGE_PROXY_BASEURL"`
 
 	// Email configuration (optional)
-	EmailProvider string `env:"EMAIL_PROVIDER"`
-	EmailSender   string `env:"EMAIL_SENDER"`
+	EmailProvider string `env:"EMAIL_PROVIDER" envDefault:"noop"`
+	EmailSender   string `env:"EMAIL_SENDER" envDefault:"support@titanic.sh"`
 
 	// SMTP configuration
 	SmtpHost     string `env:"SMTP_HOST"`
 	SmtpPort     int    `env:"SMTP_PORT" envDefault:"587"`
 	SmtpUser     string `env:"SMTP_USER"`
 	SmtpPassword string `env:"SMTP_PASSWORD"`
-
-	// Sendgrid configuration
-	SendgridApiKey string `env:"SENDGRID_API_KEY"`
-
-	// Mailgun configuration
-	MailgunApiKey string `env:"MAILGUN_API_KEY"`
-	MailgunUrl    string `env:"MAILGUN_URL" envDefault:"api.eu.mailgun.net"`
 
 	// Score server configuration
 	WebHost                    string `env:"WEB_HOST" envDefault:"localhost"`
