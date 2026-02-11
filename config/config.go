@@ -53,10 +53,12 @@ type Config struct {
 	EmailSender   string `env:"EMAIL_SENDER" envDefault:"support@titanic.sh"`
 
 	// SMTP configuration
-	SmtpHost     string `env:"SMTP_HOST"`
-	SmtpPort     int    `env:"SMTP_PORT" envDefault:"587"`
-	SmtpUser     string `env:"SMTP_USER"`
-	SmtpPassword string `env:"SMTP_PASSWORD"`
+	SmtpHost          string `env:"SMTP_HOST"`
+	SmtpPort          int    `env:"SMTP_PORT" envDefault:"587"`
+	SmtpUser          string `env:"SMTP_USER"`
+	SmtpPassword      string `env:"SMTP_PASSWORD"`
+	SmtpTls           bool   `env:"SMTP_TLS" envDefault:"true"`
+	SmtpSkipTlsVerify bool   `env:"SMTP_SKIP_TLS_VERIFY" envDefault:"false"`
 
 	// Score server configuration
 	WebHost                    string `env:"WEB_HOST" envDefault:"localhost"`
