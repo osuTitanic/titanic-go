@@ -1,6 +1,8 @@
 package constants
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Mode int8
 
@@ -41,48 +43,6 @@ func (m Mode) Alias() string {
 	}
 }
 
-type Grade int8
-
-const (
-	GradeXH Grade = 0
-	GradeSH Grade = 1
-	GradeX  Grade = 2
-	GradeS  Grade = 3
-	GradeA  Grade = 4
-	GradeB  Grade = 5
-	GradeC  Grade = 6
-	GradeD  Grade = 7
-	GradeF  Grade = 8
-	GradeN  Grade = 9
-)
-
-func (g Grade) String() string {
-	switch g {
-	case GradeXH:
-		return "XH"
-	case GradeSH:
-		return "SH"
-	case GradeX:
-		return "X"
-	case GradeS:
-		return "S"
-	case GradeA:
-		return "A"
-	case GradeB:
-		return "B"
-	case GradeC:
-		return "C"
-	case GradeD:
-		return "D"
-	case GradeF:
-		return "F"
-	case GradeN:
-		return "N"
-	default:
-		return fmt.Sprintf("Unknown(%d)", g)
-	}
-}
-
 type ScoreStatus int
 
 const (
@@ -93,3 +53,61 @@ const (
 	ScoreStatusBest      ScoreStatus = 3
 	ScoreStatusMods      ScoreStatus = 4
 )
+
+type Grade string
+
+const (
+	GradeXH Grade = "XH"
+	GradeSH Grade = "SH"
+	GradeX  Grade = "X"
+	GradeS  Grade = "S"
+	GradeA  Grade = "A"
+	GradeB  Grade = "B"
+	GradeC  Grade = "C"
+	GradeD  Grade = "D"
+	GradeF  Grade = "F"
+	GradeN  Grade = "N"
+)
+
+func (grade Grade) String() string {
+	if !grade.IsValid() {
+		return fmt.Sprintf("Unknown(%s)", string(grade))
+	}
+	return string(grade)
+}
+
+func (grade Grade) Value() int8 {
+	switch grade {
+	case GradeXH:
+		return 0
+	case GradeSH:
+		return 1
+	case GradeX:
+		return 2
+	case GradeS:
+		return 3
+	case GradeA:
+		return 4
+	case GradeB:
+		return 5
+	case GradeC:
+		return 6
+	case GradeD:
+		return 7
+	case GradeF:
+		return 8
+	case GradeN:
+		return 9
+	default:
+		return -1
+	}
+}
+
+func (grade Grade) IsValid() bool {
+	switch grade {
+	case GradeXH, GradeSH, GradeX, GradeS, GradeA, GradeB, GradeC, GradeD, GradeF, GradeN:
+		return true
+	default:
+		return false
+	}
+}
