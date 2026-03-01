@@ -22,12 +22,11 @@ type User struct {
 	Activated        bool                  `gorm:"column:activated;default:false"`
 	PreferredMode    constants.Mode        `gorm:"column:preferred_mode;default:0"`
 	PreferredRanking constants.RankingType `gorm:"column:preferred_ranking;default:global"`
-	Playstyle        int                   `gorm:"column:playstyle;default:0"`
+	Playstyle        constants.Playstyle   `gorm:"column:playstyle;default:0"`
 	IrcToken         string                `gorm:"column:irc_token;default:encode(gen_random_bytes(5),'hex')"`
 	AvatarHash       *string               `gorm:"column:avatar_hash"`
 	AvatarLastUpdate time.Time             `gorm:"column:avatar_last_changed;autoCreateTime"`
 	FriendOnlyDMs    bool                  `gorm:"column:friendonly_dms;default:false"`
-	// TODO: Add playstyle to constants
 
 	Userpage  *string `gorm:"column:userpage_about"`
 	Signature *string `gorm:"column:userpage_signature"`
