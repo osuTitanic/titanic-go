@@ -12,3 +12,10 @@ const (
 	BeatmapStatusQualified BeatmapStatus = 3
 	BeatmapStatusLoved     BeatmapStatus = 4
 )
+
+type BeatmapServer int
+
+const (
+	BeatmapServerBancho  BeatmapServer = 0
+	BeatmapServerTitanic BeatmapServer = 1
+)
