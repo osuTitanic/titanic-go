@@ -7,6 +7,7 @@ import (
 )
 
 type Repositories struct {
+	// Users
 	Users             database.IUserRepository
 	Stats             database.IStatsRepository
 	Relationships     database.IRelationshipRepository
@@ -22,6 +23,15 @@ type Repositories struct {
 	Notifications     database.INotificationRepository
 	Achievements      database.IAchievementRepository
 	BeatmapFavourites database.IBeatmapFavouriteRepository
+
+	// Beatmaps
+	// TODO: ...
+
+	// Rankings
+	// TODO: ...
+
+	// Forums
+	// TODO: ...
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {

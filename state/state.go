@@ -12,6 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
+// State holds the application state, including database
+// repositories, configuration, logger, storage & email services.
 type State struct {
 	*Repositories
 
@@ -20,6 +22,7 @@ type State struct {
 	Logger   *slog.Logger
 	Storage  storage.Storage
 	Email    email.Email
+	// TODO: Add redis instance
 }
 
 func NewState(environmentFiles ...string) (*State, error) {
@@ -66,10 +69,30 @@ func NewState(environmentFiles ...string) (*State, error) {
 	}, nil
 }
 
+// DatabaseTransaction executes the given function within a database transaction.
+// Example usage:
+//
+//	err := state.DatabaseTransaction(func(repos *Repositories) error {
+//	    // Perform database operations using repos
+//	 	repos.User.Create(...)
+//
+//		// If an error is returned, the transaction will be rolled back
+//	    // If nil is returned, the transaction will be committed
+//	    return nil
+//	})
+func (state *State) DatabaseTransaction(fn func(repositories *Repositories) error) error {
+	if state == nil || state.Database == nil {
+		return fmt.Errorf("state: database is not initialized")
+	}
+	return state.Database.Transaction(func(tx *gorm.DB) error {
+		return fn(NewRepositories(tx))
+	})
+}
+
+// Close gracefully closes the state
 func (state *State) Close() error {
 	if state == nil || state.Database == nil {
 		return nil
 	}
-
 	return database.CloseSession(state.Database)
 }
