@@ -33,7 +33,7 @@ type Beatmapset struct {
 	ApprovedBy         *int                    `gorm:"column:approved_by"`
 	LastUpdate         time.Time               `gorm:"column:last_updated;autoCreateTime"`
 	AddedAt            *time.Time              `gorm:"column:added_at;autoCreateTime"`
-	TotalPlaycount     int64                   `gorm:"column:total_playcount;default:0"`
+	TotalPlaycount     int64                   `gorm:"column:total_playcount;default:0;->"`
 	MaxDiff            float64                 `gorm:"column:max_diff;default:0.0;->"`
 	RatingAverage      float64                 `gorm:"column:rating_average;default:0.0;->"`
 	RatingCount        int                     `gorm:"column:rating_count;default:0;->"`
