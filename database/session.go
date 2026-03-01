@@ -27,6 +27,7 @@ func CreateSession(cfg *config.Config) (*gorm.DB, error) {
 		sqlDB.SetMaxOpenConns(cfg.PostgresPoolSizeOverflow)
 		sqlDB.SetMaxIdleConns(cfg.PostgresPoolSize)
 		sqlDB.SetConnMaxLifetime(time.Duration(cfg.PostgresPoolRecycle) * time.Second)
+		sqlDB.SetConnMaxIdleTime(time.Duration(cfg.PostgresPoolTimeout) * time.Second)
 	}
 
 	if cfg.PostgresPoolPrePing {
@@ -35,4 +36,18 @@ func CreateSession(cfg *config.Config) (*gorm.DB, error) {
 		}
 	}
 	return db, nil
+}
+
+// CloseSession closes the underlying database connection pool
+func CloseSession(db *gorm.DB) error {
+	if db == nil {
+		return nil
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		return err
+	}
+
+	return sqlDB.Close()
 }
