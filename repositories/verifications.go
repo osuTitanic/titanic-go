@@ -17,8 +17,8 @@ func (r *VerificationRepository) Create(verification *schemas.Verification) erro
 	return r.db.Create(verification).Error
 }
 
-func (r *VerificationRepository) Save(verification *schemas.Verification) error {
-	return r.db.Save(verification).Error
+func (r *VerificationRepository) Update(id int, updates map[string]interface{}) error {
+	return r.db.Model(&schemas.Verification{}).Where("id = ?", id).Updates(updates).Error
 }
 
 func (r *VerificationRepository) Delete(verification *schemas.Verification) error {

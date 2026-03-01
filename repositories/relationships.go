@@ -17,8 +17,8 @@ func (r *RelationshipRepository) Create(relationship *schemas.Relationship) erro
 	return r.db.Create(relationship).Error
 }
 
-func (r *RelationshipRepository) Save(relationship *schemas.Relationship) error {
-	return r.db.Save(relationship).Error
+func (r *RelationshipRepository) Update(userId int, targetId int, updates map[string]interface{}) error {
+	return r.db.Model(&schemas.Relationship{}).Where("user_id = ? AND target_id = ?", userId, targetId).Updates(updates).Error
 }
 
 func (r *RelationshipRepository) Delete(relationship *schemas.Relationship) error {

@@ -17,8 +17,8 @@ func (r *AchievementRepository) Create(achievement *schemas.Achievement) error {
 	return r.db.Create(achievement).Error
 }
 
-func (r *AchievementRepository) Save(achievement *schemas.Achievement) error {
-	return r.db.Save(achievement).Error
+func (r *AchievementRepository) Update(userId int, name string, updates map[string]interface{}) error {
+	return r.db.Model(&schemas.Achievement{}).Where("user_id = ? AND name = ?", userId, name).Updates(updates).Error
 }
 
 func (r *AchievementRepository) Delete(achievement *schemas.Achievement) error {

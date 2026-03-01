@@ -17,8 +17,8 @@ func (r *NameRepository) Create(name *schemas.Name) error {
 	return r.db.Create(name).Error
 }
 
-func (r *NameRepository) Save(name *schemas.Name) error {
-	return r.db.Save(name).Error
+func (r *NameRepository) Update(id int, updates map[string]interface{}) error {
+	return r.db.Model(&schemas.Name{}).Where("id = ?", id).Updates(updates).Error
 }
 
 func (r *NameRepository) Delete(name *schemas.Name) error {

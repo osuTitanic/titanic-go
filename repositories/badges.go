@@ -17,8 +17,8 @@ func (r *BadgeRepository) Create(badge *schemas.Badge) error {
 	return r.db.Create(badge).Error
 }
 
-func (r *BadgeRepository) Save(badge *schemas.Badge) error {
-	return r.db.Save(badge).Error
+func (r *BadgeRepository) Update(id int, updates map[string]interface{}) error {
+	return r.db.Model(&schemas.Badge{}).Where("id = ?", id).Updates(updates).Error
 }
 
 func (r *BadgeRepository) Delete(badge *schemas.Badge) error {

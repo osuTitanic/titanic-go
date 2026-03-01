@@ -4,7 +4,7 @@ import "github.com/osuTitanic/common-go/schemas"
 
 type IUserRepository interface {
 	Create(user *schemas.User) error
-	Save(user *schemas.User) error
+	Update(id int, updates map[string]interface{}) error
 	Delete(user *schemas.User) error
 
 	ById(id int) (*schemas.User, error)
@@ -26,7 +26,7 @@ type IUserRepository interface {
 
 type IStatsRepository interface {
 	Create(stats *schemas.Stats) error
-	Save(stats *schemas.Stats) error
+	Update(userId int, mode int, updates map[string]interface{}) error
 	Delete(stats *schemas.Stats) error
 
 	ByMode(userId int, mode int) (*schemas.Stats, error)
@@ -35,7 +35,7 @@ type IStatsRepository interface {
 
 type IRelationshipRepository interface {
 	Create(relationship *schemas.Relationship) error
-	Save(relationship *schemas.Relationship) error
+	Update(userId int, targetId int, updates map[string]interface{}) error
 	Delete(relationship *schemas.Relationship) error
 
 	ByUserAndTarget(userId int, targetId int) (*schemas.Relationship, error)
@@ -47,7 +47,7 @@ type IRelationshipRepository interface {
 
 type IBadgeRepository interface {
 	Create(badge *schemas.Badge) error
-	Save(badge *schemas.Badge) error
+	Update(id int, updates map[string]interface{}) error
 	Delete(badge *schemas.Badge) error
 
 	ById(id int) (*schemas.Badge, error)
@@ -56,7 +56,7 @@ type IBadgeRepository interface {
 
 type INameRepository interface {
 	Create(name *schemas.Name) error
-	Save(name *schemas.Name) error
+	Update(id int, updates map[string]interface{}) error
 	Delete(name *schemas.Name) error
 
 	ById(id int) (*schemas.Name, error)
@@ -66,7 +66,7 @@ type INameRepository interface {
 
 type IInfringementRepository interface {
 	Create(infringement *schemas.Infringement) error
-	Save(infringement *schemas.Infringement) error
+	Update(id int, updates map[string]interface{}) error
 	Delete(infringement *schemas.Infringement) error
 
 	ById(id int) (*schemas.Infringement, error)
@@ -75,7 +75,7 @@ type IInfringementRepository interface {
 
 type IReportRepository interface {
 	Create(report *schemas.Report) error
-	Save(report *schemas.Report) error
+	Update(id int, updates map[string]interface{}) error
 	Delete(report *schemas.Report) error
 
 	ById(id int) (*schemas.Report, error)
@@ -85,7 +85,7 @@ type IReportRepository interface {
 
 type IVerificationRepository interface {
 	Create(verification *schemas.Verification) error
-	Save(verification *schemas.Verification) error
+	Update(id int, updates map[string]interface{}) error
 	Delete(verification *schemas.Verification) error
 
 	ById(id int) (*schemas.Verification, error)
@@ -96,7 +96,7 @@ type IVerificationRepository interface {
 
 type IGroupRepository interface {
 	Create(group *schemas.Group) error
-	Save(group *schemas.Group) error
+	Update(id int, updates map[string]interface{}) error
 	Delete(group *schemas.Group) error
 
 	ById(id int) (*schemas.Group, error)
@@ -105,7 +105,7 @@ type IGroupRepository interface {
 
 type IGroupEntryRepository interface {
 	Create(entry *schemas.GroupEntry) error
-	Save(entry *schemas.GroupEntry) error
+	Update(userId int, groupId int, updates map[string]interface{}) error
 	Delete(entry *schemas.GroupEntry) error
 
 	ByUserAndGroup(userId int, groupId int) (*schemas.GroupEntry, error)
@@ -115,7 +115,7 @@ type IGroupEntryRepository interface {
 
 type IUserPermissionRepository interface {
 	Create(permission *schemas.UserPermission) error
-	Save(permission *schemas.UserPermission) error
+	Update(id int, updates map[string]interface{}) error
 	Delete(permission *schemas.UserPermission) error
 
 	ById(id int) (*schemas.UserPermission, error)
@@ -124,7 +124,7 @@ type IUserPermissionRepository interface {
 
 type IGroupPermissionRepository interface {
 	Create(permission *schemas.GroupPermission) error
-	Save(permission *schemas.GroupPermission) error
+	Update(id int, updates map[string]interface{}) error
 	Delete(permission *schemas.GroupPermission) error
 
 	ById(id int) (*schemas.GroupPermission, error)
@@ -133,7 +133,7 @@ type IGroupPermissionRepository interface {
 
 type INotificationRepository interface {
 	Create(notification *schemas.Notification) error
-	Save(notification *schemas.Notification) error
+	Update(id int64, updates map[string]interface{}) error
 	Delete(notification *schemas.Notification) error
 
 	ById(id int64) (*schemas.Notification, error)
@@ -143,7 +143,7 @@ type INotificationRepository interface {
 
 type IAchievementRepository interface {
 	Create(achievement *schemas.Achievement) error
-	Save(achievement *schemas.Achievement) error
+	Update(userId int, name string, updates map[string]interface{}) error
 	Delete(achievement *schemas.Achievement) error
 
 	ManyByUserId(userId int) ([]*schemas.Achievement, error)
@@ -151,7 +151,7 @@ type IAchievementRepository interface {
 
 type IBeatmapFavouriteRepository interface {
 	Create(favourite *schemas.BeatmapFavourite) error
-	Save(favourite *schemas.BeatmapFavourite) error
+	Update(userId int, setId int, updates map[string]interface{}) error
 	Delete(favourite *schemas.BeatmapFavourite) error
 
 	ByUserAndSet(userId int, setId int) (*schemas.BeatmapFavourite, error)
