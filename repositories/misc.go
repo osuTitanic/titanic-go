@@ -26,18 +26,18 @@ func (r *NotificationRepository) Delete(notification *schemas.Notification) erro
 	return r.db.Delete(notification).Error
 }
 
-func (r *NotificationRepository) ById(id int64) (*schemas.Notification, error) {
+func (r *NotificationRepository) ById(id int64, preload ...string) (*schemas.Notification, error) {
 	var notification schemas.Notification
-	err := r.db.Where("id = ?", id).First(&notification).Error
+	err := Preloaded(r.db, preload).Where("id = ?", id).First(&notification).Error
 	if err != nil {
 		return nil, err
 	}
 	return &notification, nil
 }
 
-func (r *NotificationRepository) ManyByUserId(userId int) ([]*schemas.Notification, error) {
+func (r *NotificationRepository) ManyByUserId(userId int, preload ...string) ([]*schemas.Notification, error) {
 	var notifications []*schemas.Notification
-	err := r.db.Where("user_id = ?", userId).Order("time DESC").Find(&notifications).Error
+	err := Preloaded(r.db, preload).Where("user_id = ?", userId).Order("time DESC").Find(&notifications).Error
 	return notifications, err
 }
 

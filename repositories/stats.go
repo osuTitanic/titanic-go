@@ -26,17 +26,17 @@ func (r *StatsRepository) Delete(stats *schemas.Stats) error {
 	return r.db.Delete(stats).Error
 }
 
-func (r *StatsRepository) ByMode(userId int, mode int) (*schemas.Stats, error) {
+func (r *StatsRepository) ByMode(userId int, mode int, preload ...string) (*schemas.Stats, error) {
 	var stats schemas.Stats
-	err := r.db.Where("id = ? AND mode = ?", userId, mode).First(&stats).Error
+	err := Preloaded(r.db, preload).Where("id = ? AND mode = ?", userId, mode).First(&stats).Error
 	if err != nil {
 		return nil, err
 	}
 	return &stats, nil
 }
 
-func (r *StatsRepository) ManyByUserId(userId int) ([]*schemas.Stats, error) {
+func (r *StatsRepository) ManyByUserId(userId int, preload ...string) ([]*schemas.Stats, error) {
 	var stats []*schemas.Stats
-	err := r.db.Where("id = ?", userId).Find(&stats).Error
+	err := Preloaded(r.db, preload).Where("id = ?", userId).Find(&stats).Error
 	return stats, err
 }

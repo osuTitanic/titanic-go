@@ -26,8 +26,8 @@ func (r *AchievementRepository) Delete(achievement *schemas.Achievement) error {
 	return r.db.Delete(achievement).Error
 }
 
-func (r *AchievementRepository) ManyByUserId(userId int) ([]*schemas.Achievement, error) {
+func (r *AchievementRepository) ManyByUserId(userId int, preload ...string) ([]*schemas.Achievement, error) {
 	var achievements []*schemas.Achievement
-	err := r.db.Where("user_id = ?", userId).Find(&achievements).Error
+	err := Preloaded(r.db, preload).Where("user_id = ?", userId).Find(&achievements).Error
 	return achievements, err
 }

@@ -26,17 +26,17 @@ func (r *BadgeRepository) Delete(badge *schemas.Badge) error {
 	return r.db.Delete(badge).Error
 }
 
-func (r *BadgeRepository) ById(id int) (*schemas.Badge, error) {
+func (r *BadgeRepository) ById(id int, preload ...string) (*schemas.Badge, error) {
 	var badge schemas.Badge
-	err := r.db.Where("id = ?", id).First(&badge).Error
+	err := Preloaded(r.db, preload).Where("id = ?", id).First(&badge).Error
 	if err != nil {
 		return nil, err
 	}
 	return &badge, nil
 }
 
-func (r *BadgeRepository) ManyByUserId(userId int) ([]*schemas.Badge, error) {
+func (r *BadgeRepository) ManyByUserId(userId int, preload ...string) ([]*schemas.Badge, error) {
 	var badges []*schemas.Badge
-	err := r.db.Where("user_id = ?", userId).Order("created DESC").Find(&badges).Error
+	err := Preloaded(r.db, preload).Where("user_id = ?", userId).Order("created DESC").Find(&badges).Error
 	return badges, err
 }

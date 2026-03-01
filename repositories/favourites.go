@@ -26,18 +26,18 @@ func (r *BeatmapFavouriteRepository) Delete(favourite *schemas.BeatmapFavourite)
 	return r.db.Delete(favourite).Error
 }
 
-func (r *BeatmapFavouriteRepository) ByUserAndSet(userId int, setId int) (*schemas.BeatmapFavourite, error) {
+func (r *BeatmapFavouriteRepository) ByUserAndSet(userId int, setId int, preload ...string) (*schemas.BeatmapFavourite, error) {
 	var favourite schemas.BeatmapFavourite
-	err := r.db.Where("user_id = ? AND set_id = ?", userId, setId).First(&favourite).Error
+	err := Preloaded(r.db, preload).Where("user_id = ? AND set_id = ?", userId, setId).First(&favourite).Error
 	if err != nil {
 		return nil, err
 	}
 	return &favourite, nil
 }
 
-func (r *BeatmapFavouriteRepository) ManyByUserId(userId int) ([]*schemas.BeatmapFavourite, error) {
+func (r *BeatmapFavouriteRepository) ManyByUserId(userId int, preload ...string) ([]*schemas.BeatmapFavourite, error) {
 	var favourites []*schemas.BeatmapFavourite
-	err := r.db.Where("user_id = ?", userId).Find(&favourites).Error
+	err := Preloaded(r.db, preload).Where("user_id = ?", userId).Find(&favourites).Error
 	return favourites, err
 }
 

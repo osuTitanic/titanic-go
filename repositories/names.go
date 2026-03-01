@@ -26,26 +26,26 @@ func (r *NameRepository) Delete(name *schemas.Name) error {
 	return r.db.Delete(name).Error
 }
 
-func (r *NameRepository) ById(id int) (*schemas.Name, error) {
+func (r *NameRepository) ById(id int, preload ...string) (*schemas.Name, error) {
 	var name schemas.Name
-	err := r.db.Where("id = ?", id).First(&name).Error
+	err := Preloaded(r.db, preload).Where("id = ?", id).First(&name).Error
 	if err != nil {
 		return nil, err
 	}
 	return &name, nil
 }
 
-func (r *NameRepository) ByName(value string) (*schemas.Name, error) {
+func (r *NameRepository) ByName(value string, preload ...string) (*schemas.Name, error) {
 	var name schemas.Name
-	err := r.db.Where("name = ?", value).First(&name).Error
+	err := Preloaded(r.db, preload).Where("name = ?", value).First(&name).Error
 	if err != nil {
 		return nil, err
 	}
 	return &name, nil
 }
 
-func (r *NameRepository) ManyByUserId(userId int) ([]*schemas.Name, error) {
+func (r *NameRepository) ManyByUserId(userId int, preload ...string) ([]*schemas.Name, error) {
 	var names []*schemas.Name
-	err := r.db.Where("user_id = ?", userId).Find(&names).Error
+	err := Preloaded(r.db, preload).Where("user_id = ?", userId).Find(&names).Error
 	return names, err
 }

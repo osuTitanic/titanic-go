@@ -26,23 +26,23 @@ func (r *ReportRepository) Delete(report *schemas.Report) error {
 	return r.db.Delete(report).Error
 }
 
-func (r *ReportRepository) ById(id int) (*schemas.Report, error) {
+func (r *ReportRepository) ById(id int, preload ...string) (*schemas.Report, error) {
 	var report schemas.Report
-	err := r.db.Where("id = ?", id).First(&report).Error
+	err := Preloaded(r.db, preload).Where("id = ?", id).First(&report).Error
 	if err != nil {
 		return nil, err
 	}
 	return &report, nil
 }
 
-func (r *ReportRepository) ManyByTargetId(targetId int) ([]*schemas.Report, error) {
+func (r *ReportRepository) ManyByTargetId(targetId int, preload ...string) ([]*schemas.Report, error) {
 	var reports []*schemas.Report
-	err := r.db.Where("target_id = ?", targetId).Order("time DESC").Find(&reports).Error
+	err := Preloaded(r.db, preload).Where("target_id = ?", targetId).Order("time DESC").Find(&reports).Error
 	return reports, err
 }
 
-func (r *ReportRepository) ManyBySenderId(senderId int) ([]*schemas.Report, error) {
+func (r *ReportRepository) ManyBySenderId(senderId int, preload ...string) ([]*schemas.Report, error) {
 	var reports []*schemas.Report
-	err := r.db.Where("sender_id = ?", senderId).Order("time DESC").Find(&reports).Error
+	err := Preloaded(r.db, preload).Where("sender_id = ?", senderId).Order("time DESC").Find(&reports).Error
 	return reports, err
 }

@@ -26,18 +26,18 @@ func (r *UserPermissionRepository) Delete(permission *schemas.UserPermission) er
 	return r.db.Delete(permission).Error
 }
 
-func (r *UserPermissionRepository) ById(id int) (*schemas.UserPermission, error) {
+func (r *UserPermissionRepository) ById(id int, preload ...string) (*schemas.UserPermission, error) {
 	var permission schemas.UserPermission
-	err := r.db.Where("id = ?", id).First(&permission).Error
+	err := Preloaded(r.db, preload).Where("id = ?", id).First(&permission).Error
 	if err != nil {
 		return nil, err
 	}
 	return &permission, nil
 }
 
-func (r *UserPermissionRepository) ManyByUserId(userId int) ([]*schemas.UserPermission, error) {
+func (r *UserPermissionRepository) ManyByUserId(userId int, preload ...string) ([]*schemas.UserPermission, error) {
 	var permissions []*schemas.UserPermission
-	err := r.db.Where("user_id = ?", userId).Find(&permissions).Error
+	err := Preloaded(r.db, preload).Where("user_id = ?", userId).Find(&permissions).Error
 	return permissions, err
 }
 
@@ -62,17 +62,17 @@ func (r *GroupPermissionRepository) Delete(permission *schemas.GroupPermission) 
 	return r.db.Delete(permission).Error
 }
 
-func (r *GroupPermissionRepository) ById(id int) (*schemas.GroupPermission, error) {
+func (r *GroupPermissionRepository) ById(id int, preload ...string) (*schemas.GroupPermission, error) {
 	var permission schemas.GroupPermission
-	err := r.db.Where("id = ?", id).First(&permission).Error
+	err := Preloaded(r.db, preload).Where("id = ?", id).First(&permission).Error
 	if err != nil {
 		return nil, err
 	}
 	return &permission, nil
 }
 
-func (r *GroupPermissionRepository) ManyByGroupId(groupId int) ([]*schemas.GroupPermission, error) {
+func (r *GroupPermissionRepository) ManyByGroupId(groupId int, preload ...string) ([]*schemas.GroupPermission, error) {
 	var permissions []*schemas.GroupPermission
-	err := r.db.Where("group_id = ?", groupId).Find(&permissions).Error
+	err := Preloaded(r.db, preload).Where("group_id = ?", groupId).Find(&permissions).Error
 	return permissions, err
 }

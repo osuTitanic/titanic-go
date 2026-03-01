@@ -28,73 +28,73 @@ func (r *UserRepository) Delete(user *schemas.User) error {
 	return r.db.Delete(user).Error
 }
 
-func (r *UserRepository) ById(id int) (*schemas.User, error) {
+func (r *UserRepository) ById(id int, preload ...string) (*schemas.User, error) {
 	var user schemas.User
-	err := r.db.Where("id = ?", id).First(&user).Error
+	err := Preloaded(r.db, preload).Where("id = ?", id).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *UserRepository) ByName(name string) (*schemas.User, error) {
+func (r *UserRepository) ByName(name string, preload ...string) (*schemas.User, error) {
 	var user schemas.User
-	err := r.db.Where("name = ?", name).First(&user).Error
+	err := Preloaded(r.db, preload).Where("name = ?", name).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *UserRepository) BySafeName(safeName string) (*schemas.User, error) {
+func (r *UserRepository) BySafeName(safeName string, preload ...string) (*schemas.User, error) {
 	var user schemas.User
-	err := r.db.Where("safe_name = ?", safeName).First(&user).Error
+	err := Preloaded(r.db, preload).Where("safe_name = ?", safeName).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *UserRepository) ByEmail(email string) (*schemas.User, error) {
+func (r *UserRepository) ByEmail(email string, preload ...string) (*schemas.User, error) {
 	var user schemas.User
-	err := r.db.Where("LOWER(email) = ?", strings.ToLower(email)).First(&user).Error
+	err := Preloaded(r.db, preload).Where("LOWER(email) = ?", strings.ToLower(email)).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *UserRepository) ByDiscordId(discordId int64) (*schemas.User, error) {
+func (r *UserRepository) ByDiscordId(discordId int64, preload ...string) (*schemas.User, error) {
 	var user schemas.User
-	err := r.db.Where("discord_id = ?", discordId).First(&user).Error
+	err := Preloaded(r.db, preload).Where("discord_id = ?", discordId).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *UserRepository) ManyById(userIds []int) ([]*schemas.User, error) {
+func (r *UserRepository) ManyById(userIds []int, preload ...string) ([]*schemas.User, error) {
 	if len(userIds) == 0 {
 		return []*schemas.User{}, nil
 	}
 
 	var users []*schemas.User
-	err := r.db.Where("id IN ?", userIds).Find(&users).Error
+	err := Preloaded(r.db, preload).Where("id IN ?", userIds).Find(&users).Error
 	return users, err
 }
 
-func (r *UserRepository) ManyByName(names []string) ([]*schemas.User, error) {
+func (r *UserRepository) ManyByName(names []string, preload ...string) ([]*schemas.User, error) {
 	if len(names) == 0 {
 		return []*schemas.User{}, nil
 	}
 
 	var users []*schemas.User
-	err := r.db.Where("name IN ?", names).Find(&users).Error
+	err := Preloaded(r.db, preload).Where("name IN ?", names).Find(&users).Error
 	return users, err
 }
 
-func (r *UserRepository) ManyByRank(limit int, ascending bool) ([]*schemas.User, error) {
-	query := r.db.Model(&schemas.User{}).
+func (r *UserRepository) ManyByRank(limit int, ascending bool, preload ...string) ([]*schemas.User, error) {
+	query := Preloaded(r.db, preload).Model(&schemas.User{}).
 		Joins("JOIN stats ON stats.id = users.id").
 		Where("users.restricted = ?", false)
 
@@ -113,8 +113,8 @@ func (r *UserRepository) ManyByRank(limit int, ascending bool) ([]*schemas.User,
 	return users, err
 }
 
-func (r *UserRepository) ManyByCreationDate(limit int, ascending bool) ([]*schemas.User, error) {
-	query := r.db.Model(&schemas.User{}).
+func (r *UserRepository) ManyByCreationDate(limit int, ascending bool, preload ...string) ([]*schemas.User, error) {
+	query := Preloaded(r.db, preload).Model(&schemas.User{}).
 		Where("restricted = ?", false).
 		Where("activated = ?", true)
 

@@ -26,27 +26,27 @@ func (r *VerificationRepository) Delete(verification *schemas.Verification) erro
 	return r.db.Delete(verification).Error
 }
 
-func (r *VerificationRepository) ById(id int) (*schemas.Verification, error) {
+func (r *VerificationRepository) ById(id int, preload ...string) (*schemas.Verification, error) {
 	var verification schemas.Verification
-	err := r.db.Where("id = ?", id).First(&verification).Error
+	err := Preloaded(r.db, preload).Where("id = ?", id).First(&verification).Error
 	if err != nil {
 		return nil, err
 	}
 	return &verification, nil
 }
 
-func (r *VerificationRepository) ByToken(token string) (*schemas.Verification, error) {
+func (r *VerificationRepository) ByToken(token string, preload ...string) (*schemas.Verification, error) {
 	var verification schemas.Verification
-	err := r.db.Where("token = ?", token).First(&verification).Error
+	err := Preloaded(r.db, preload).Where("token = ?", token).First(&verification).Error
 	if err != nil {
 		return nil, err
 	}
 	return &verification, nil
 }
 
-func (r *VerificationRepository) ManyByUserId(userId int) ([]*schemas.Verification, error) {
+func (r *VerificationRepository) ManyByUserId(userId int, preload ...string) ([]*schemas.Verification, error) {
 	var verifications []*schemas.Verification
-	err := r.db.Where("user_id = ?", userId).Find(&verifications).Error
+	err := Preloaded(r.db, preload).Where("user_id = ?", userId).Find(&verifications).Error
 	return verifications, err
 }
 

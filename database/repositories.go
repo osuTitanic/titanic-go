@@ -7,16 +7,16 @@ type IUserRepository interface {
 	Update(id int, updates map[string]interface{}) (int64, error)
 	Delete(user *schemas.User) error
 
-	ById(id int) (*schemas.User, error)
-	ByName(name string) (*schemas.User, error)
-	BySafeName(safeName string) (*schemas.User, error)
-	ByEmail(email string) (*schemas.User, error)
-	ByDiscordId(discordId int64) (*schemas.User, error)
+	ById(id int, preload ...string) (*schemas.User, error)
+	ByName(name string, preload ...string) (*schemas.User, error)
+	BySafeName(safeName string, preload ...string) (*schemas.User, error)
+	ByEmail(email string, preload ...string) (*schemas.User, error)
+	ByDiscordId(discordId int64, preload ...string) (*schemas.User, error)
 
-	ManyById(userIds []int) ([]*schemas.User, error)
-	ManyByName(names []string) ([]*schemas.User, error)
-	ManyByRank(limit int, ascending bool) ([]*schemas.User, error)
-	ManyByCreationDate(limit int, ascending bool) ([]*schemas.User, error)
+	ManyById(userIds []int, preload ...string) ([]*schemas.User, error)
+	ManyByName(names []string, preload ...string) ([]*schemas.User, error)
+	ManyByRank(limit int, ascending bool, preload ...string) ([]*schemas.User, error)
+	ManyByCreationDate(limit int, ascending bool, preload ...string) ([]*schemas.User, error)
 
 	GetUsername(id int) (string, error)
 	GetUserId(name string) (int, error)
@@ -29,8 +29,8 @@ type IStatsRepository interface {
 	Update(userId int, mode int, updates map[string]interface{}) (int64, error)
 	Delete(stats *schemas.Stats) error
 
-	ByMode(userId int, mode int) (*schemas.Stats, error)
-	ManyByUserId(userId int) ([]*schemas.Stats, error)
+	ByMode(userId int, mode int, preload ...string) (*schemas.Stats, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.Stats, error)
 }
 
 type IRelationshipRepository interface {
@@ -38,9 +38,9 @@ type IRelationshipRepository interface {
 	Update(userId int, targetId int, updates map[string]interface{}) (int64, error)
 	Delete(relationship *schemas.Relationship) error
 
-	ByUserAndTarget(userId int, targetId int) (*schemas.Relationship, error)
-	ManyByUserId(userId int) ([]*schemas.Relationship, error)
-	ManyByTargetId(targetId int) ([]*schemas.Relationship, error)
+	ByUserAndTarget(userId int, targetId int, preload ...string) (*schemas.Relationship, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.Relationship, error)
+	ManyByTargetId(targetId int, preload ...string) ([]*schemas.Relationship, error)
 	CountByUserId(userId int) (int, error)
 	CountByTargetId(targetId int) (int, error)
 }
@@ -50,8 +50,8 @@ type IBadgeRepository interface {
 	Update(id int, updates map[string]interface{}) (int64, error)
 	Delete(badge *schemas.Badge) error
 
-	ById(id int) (*schemas.Badge, error)
-	ManyByUserId(userId int) ([]*schemas.Badge, error)
+	ById(id int, preload ...string) (*schemas.Badge, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.Badge, error)
 }
 
 type INameRepository interface {
@@ -59,9 +59,9 @@ type INameRepository interface {
 	Update(id int, updates map[string]interface{}) (int64, error)
 	Delete(name *schemas.Name) error
 
-	ById(id int) (*schemas.Name, error)
-	ByName(name string) (*schemas.Name, error)
-	ManyByUserId(userId int) ([]*schemas.Name, error)
+	ById(id int, preload ...string) (*schemas.Name, error)
+	ByName(name string, preload ...string) (*schemas.Name, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.Name, error)
 }
 
 type IInfringementRepository interface {
@@ -69,8 +69,8 @@ type IInfringementRepository interface {
 	Update(id int, updates map[string]interface{}) (int64, error)
 	Delete(infringement *schemas.Infringement) error
 
-	ById(id int) (*schemas.Infringement, error)
-	ManyByUserId(userId int) ([]*schemas.Infringement, error)
+	ById(id int, preload ...string) (*schemas.Infringement, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.Infringement, error)
 }
 
 type IReportRepository interface {
@@ -78,9 +78,9 @@ type IReportRepository interface {
 	Update(id int, updates map[string]interface{}) (int64, error)
 	Delete(report *schemas.Report) error
 
-	ById(id int) (*schemas.Report, error)
-	ManyByTargetId(targetId int) ([]*schemas.Report, error)
-	ManyBySenderId(senderId int) ([]*schemas.Report, error)
+	ById(id int, preload ...string) (*schemas.Report, error)
+	ManyByTargetId(targetId int, preload ...string) ([]*schemas.Report, error)
+	ManyBySenderId(senderId int, preload ...string) ([]*schemas.Report, error)
 }
 
 type IVerificationRepository interface {
@@ -88,9 +88,9 @@ type IVerificationRepository interface {
 	Update(id int, updates map[string]interface{}) (int64, error)
 	Delete(verification *schemas.Verification) error
 
-	ById(id int) (*schemas.Verification, error)
-	ByToken(token string) (*schemas.Verification, error)
-	ManyByUserId(userId int) ([]*schemas.Verification, error)
+	ById(id int, preload ...string) (*schemas.Verification, error)
+	ByToken(token string, preload ...string) (*schemas.Verification, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.Verification, error)
 	DeleteByToken(token string) error
 }
 
@@ -99,8 +99,8 @@ type IGroupRepository interface {
 	Update(id int, updates map[string]interface{}) (int64, error)
 	Delete(group *schemas.Group) error
 
-	ById(id int) (*schemas.Group, error)
-	Many(includeHidden bool) ([]*schemas.Group, error)
+	ById(id int, preload ...string) (*schemas.Group, error)
+	Many(includeHidden bool, preload ...string) ([]*schemas.Group, error)
 }
 
 type IGroupEntryRepository interface {
@@ -108,9 +108,9 @@ type IGroupEntryRepository interface {
 	Update(userId int, groupId int, updates map[string]interface{}) (int64, error)
 	Delete(entry *schemas.GroupEntry) error
 
-	ByUserAndGroup(userId int, groupId int) (*schemas.GroupEntry, error)
-	ManyByUserId(userId int) ([]*schemas.GroupEntry, error)
-	ManyByGroupId(groupId int) ([]*schemas.GroupEntry, error)
+	ByUserAndGroup(userId int, groupId int, preload ...string) (*schemas.GroupEntry, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.GroupEntry, error)
+	ManyByGroupId(groupId int, preload ...string) ([]*schemas.GroupEntry, error)
 }
 
 type IUserPermissionRepository interface {
@@ -118,8 +118,8 @@ type IUserPermissionRepository interface {
 	Update(id int, updates map[string]interface{}) (int64, error)
 	Delete(permission *schemas.UserPermission) error
 
-	ById(id int) (*schemas.UserPermission, error)
-	ManyByUserId(userId int) ([]*schemas.UserPermission, error)
+	ById(id int, preload ...string) (*schemas.UserPermission, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.UserPermission, error)
 }
 
 type IGroupPermissionRepository interface {
@@ -127,8 +127,8 @@ type IGroupPermissionRepository interface {
 	Update(id int, updates map[string]interface{}) (int64, error)
 	Delete(permission *schemas.GroupPermission) error
 
-	ById(id int) (*schemas.GroupPermission, error)
-	ManyByGroupId(groupId int) ([]*schemas.GroupPermission, error)
+	ById(id int, preload ...string) (*schemas.GroupPermission, error)
+	ManyByGroupId(groupId int, preload ...string) ([]*schemas.GroupPermission, error)
 }
 
 type INotificationRepository interface {
@@ -136,8 +136,8 @@ type INotificationRepository interface {
 	Update(id int64, updates map[string]interface{}) (int64, error)
 	Delete(notification *schemas.Notification) error
 
-	ById(id int64) (*schemas.Notification, error)
-	ManyByUserId(userId int) ([]*schemas.Notification, error)
+	ById(id int64, preload ...string) (*schemas.Notification, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.Notification, error)
 	CountByUserId(userId int) (int, error)
 }
 
@@ -146,7 +146,7 @@ type IAchievementRepository interface {
 	Update(userId int, name string, updates map[string]interface{}) (int64, error)
 	Delete(achievement *schemas.Achievement) error
 
-	ManyByUserId(userId int) ([]*schemas.Achievement, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.Achievement, error)
 }
 
 type IBeatmapFavouriteRepository interface {
@@ -154,8 +154,8 @@ type IBeatmapFavouriteRepository interface {
 	Update(userId int, setId int, updates map[string]interface{}) (int64, error)
 	Delete(favourite *schemas.BeatmapFavourite) error
 
-	ByUserAndSet(userId int, setId int) (*schemas.BeatmapFavourite, error)
-	ManyByUserId(userId int) ([]*schemas.BeatmapFavourite, error)
+	ByUserAndSet(userId int, setId int, preload ...string) (*schemas.BeatmapFavourite, error)
+	ManyByUserId(userId int, preload ...string) ([]*schemas.BeatmapFavourite, error)
 	CountByUserId(userId int) (int, error)
 	CountBySetId(setId int) (int, error)
 }

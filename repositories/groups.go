@@ -26,17 +26,17 @@ func (r *GroupRepository) Delete(group *schemas.Group) error {
 	return r.db.Delete(group).Error
 }
 
-func (r *GroupRepository) ById(id int) (*schemas.Group, error) {
+func (r *GroupRepository) ById(id int, preload ...string) (*schemas.Group, error) {
 	var group schemas.Group
-	err := r.db.Where("id = ?", id).First(&group).Error
+	err := Preloaded(r.db, preload).Where("id = ?", id).First(&group).Error
 	if err != nil {
 		return nil, err
 	}
 	return &group, nil
 }
 
-func (r *GroupRepository) Many(includeHidden bool) ([]*schemas.Group, error) {
-	query := r.db.Model(&schemas.Group{})
+func (r *GroupRepository) Many(includeHidden bool, preload ...string) ([]*schemas.Group, error) {
+	query := Preloaded(r.db, preload).Model(&schemas.Group{})
 	if !includeHidden {
 		query = query.Where("hidden = ?", false)
 	}
@@ -67,23 +67,23 @@ func (r *GroupEntryRepository) Delete(entry *schemas.GroupEntry) error {
 	return r.db.Delete(entry).Error
 }
 
-func (r *GroupEntryRepository) ByUserAndGroup(userId int, groupId int) (*schemas.GroupEntry, error) {
+func (r *GroupEntryRepository) ByUserAndGroup(userId int, groupId int, preload ...string) (*schemas.GroupEntry, error) {
 	var entry schemas.GroupEntry
-	err := r.db.Where("user_id = ? AND group_id = ?", userId, groupId).First(&entry).Error
+	err := Preloaded(r.db, preload).Where("user_id = ? AND group_id = ?", userId, groupId).First(&entry).Error
 	if err != nil {
 		return nil, err
 	}
 	return &entry, nil
 }
 
-func (r *GroupEntryRepository) ManyByUserId(userId int) ([]*schemas.GroupEntry, error) {
+func (r *GroupEntryRepository) ManyByUserId(userId int, preload ...string) ([]*schemas.GroupEntry, error) {
 	var entries []*schemas.GroupEntry
-	err := r.db.Where("user_id = ?", userId).Find(&entries).Error
+	err := Preloaded(r.db, preload).Where("user_id = ?", userId).Find(&entries).Error
 	return entries, err
 }
 
-func (r *GroupEntryRepository) ManyByGroupId(groupId int) ([]*schemas.GroupEntry, error) {
+func (r *GroupEntryRepository) ManyByGroupId(groupId int, preload ...string) ([]*schemas.GroupEntry, error) {
 	var entries []*schemas.GroupEntry
-	err := r.db.Where("group_id = ?", groupId).Find(&entries).Error
+	err := Preloaded(r.db, preload).Where("group_id = ?", groupId).Find(&entries).Error
 	return entries, err
 }
