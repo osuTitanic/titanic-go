@@ -139,13 +139,13 @@ func (MatchEvent) TableName() string {
 	return "mp_events"
 }
 
-type UserActivity struct {
+type BanchoActivity struct {
 	Time     time.Time `gorm:"column:time;primaryKey;autoCreateTime"`
 	OsuCount int       `gorm:"column:osu_count;default:0"`
 	IrcCount int       `gorm:"column:irc_count;default:0"`
 	MpCount  int       `gorm:"column:mp_count;default:0"`
 }
 
-func (UserActivity) TableName() string {
+func (BanchoActivity) TableName() string {
 	return "user_activity"
 }
