@@ -43,3 +43,170 @@ type User struct {
 func (User) TableName() string {
 	return "users"
 }
+
+type Stats struct {
+	UserId      int     `gorm:"column:id;primaryKey"`
+	Mode        int     `gorm:"column:mode;primaryKey"`
+	Rank        int     `gorm:"column:rank;default:0"`
+	PeakRank    int     `gorm:"column:peak_rank;default:0"`
+	Tscore      int64   `gorm:"column:tscore;default:0"`
+	Rscore      int64   `gorm:"column:rscore;default:0"`
+	PP          float64 `gorm:"column:pp;default:0.0"`
+	PPv1        float64 `gorm:"column:ppv1;default:0.0"`
+	Playcount   int64   `gorm:"column:playcount;default:0"`
+	Playtime    int     `gorm:"column:playtime;default:0"`
+	Acc         float64 `gorm:"column:acc;default:0.0"`
+	MaxCombo    int     `gorm:"column:max_combo;default:0"`
+	TotalHits   int     `gorm:"column:total_hits;default:0"`
+	ReplayViews int     `gorm:"column:replay_views;default:0"`
+	CountXH     int     `gorm:"column:xh_count;default:0"`
+	CountX      int     `gorm:"column:x_count;default:0"`
+	CountSH     int     `gorm:"column:sh_count;default:0"`
+	CountS      int     `gorm:"column:s_count;default:0"`
+	CountA      int     `gorm:"column:a_count;default:0"`
+	CountB      int     `gorm:"column:b_count;default:0"`
+	CountC      int     `gorm:"column:c_count;default:0"`
+	CountD      int     `gorm:"column:d_count;default:0"`
+}
+
+func (Stats) TableName() string {
+	return "stats"
+}
+
+type Relationship struct {
+	UserId   int `gorm:"column:user_id;primaryKey"`
+	TargetId int `gorm:"column:target_id;primaryKey"`
+	Status   int `gorm:"column:status"`
+}
+
+func (Relationship) TableName() string {
+	return "relationships"
+}
+
+type Badge struct {
+	Id          int       `gorm:"column:id;primaryKey;autoIncrement"`
+	UserId      int       `gorm:"column:user_id"`
+	Icon        string    `gorm:"column:badge_icon"`
+	Url         *string   `gorm:"column:badge_url"`
+	Description *string   `gorm:"column:badge_description"`
+	Created     time.Time `gorm:"column:created;autoCreateTime"`
+}
+
+func (Badge) TableName() string {
+	return "profile_badges"
+}
+
+type Name struct {
+	Id        int       `gorm:"column:id;primaryKey;autoIncrement"`
+	Name      string    `gorm:"column:name"`
+	UserId    int       `gorm:"column:user_id"`
+	Reserved  bool      `gorm:"column:reserved;default:true"`
+	ChangedAt time.Time `gorm:"column:changed_at;autoCreateTime"`
+}
+
+func (Name) TableName() string {
+	return "name_history"
+}
+
+type Infringement struct {
+	Id          int        `gorm:"column:id;primaryKey;autoIncrement"`
+	UserId      int        `gorm:"column:user_id"`
+	Time        time.Time  `gorm:"column:time;primaryKey;autoCreateTime"`
+	Action      int        `gorm:"column:action;default:0"`
+	Length      *time.Time `gorm:"column:length"`
+	IsPermanent bool       `gorm:"column:is_permanent;default:false"`
+	Description *string    `gorm:"column:description"`
+}
+
+func (Infringement) TableName() string {
+	return "infringements"
+}
+
+type Report struct {
+	Id       int       `gorm:"column:id;primaryKey;autoIncrement"`
+	TargetId int       `gorm:"column:target_id"`
+	SenderId int       `gorm:"column:sender_id"`
+	Time     time.Time `gorm:"column:time;autoCreateTime"`
+	Reason   *string   `gorm:"column:reason"`
+	Resolved bool      `gorm:"column:resolved;default:false"`
+}
+
+func (Report) TableName() string {
+	return "reports"
+}
+
+type Verification struct {
+	Id     int       `gorm:"column:id;primaryKey;autoIncrement"`
+	Token  string    `gorm:"column:token"`
+	UserId int       `gorm:"column:user_id"`
+	SentAt time.Time `gorm:"column:sent_at;autoCreateTime"`
+	Type   int       `gorm:"column:type;default:0"`
+}
+
+func (Verification) TableName() string {
+	return "verifications"
+}
+
+type Group struct {
+	Id                int     `gorm:"column:id;primaryKey;autoIncrement"`
+	Name              string  `gorm:"column:name"`
+	ShortName         string  `gorm:"column:short_name"`
+	Description       *string `gorm:"column:description"`
+	Color             string  `gorm:"column:color"`
+	BanchoPermissions *int    `gorm:"column:bancho_permissions;default:0"`
+	Hidden            bool    `gorm:"column:hidden;default:false"`
+}
+
+func (Group) TableName() string {
+	return "groups"
+}
+
+type GroupEntry struct {
+	GroupId int `gorm:"column:group_id;primaryKey"`
+	UserId  int `gorm:"column:user_id;primaryKey"`
+}
+
+func (GroupEntry) TableName() string {
+	return "groups_entries"
+}
+
+type UserPermission struct {
+	Id         int       `gorm:"column:id;primaryKey;autoIncrement"`
+	UserId     int       `gorm:"column:user_id;primaryKey"`
+	Permission string    `gorm:"column:permission"`
+	Rejected   bool      `gorm:"column:rejected;default:false"`
+	CreatedAt  time.Time `gorm:"column:created_at;autoCreateTime"`
+	UpdatedAt  time.Time `gorm:"column:updated_at;autoCreateTime"`
+}
+
+func (UserPermission) TableName() string {
+	return "user_permissions"
+}
+
+type GroupPermission struct {
+	Id         int       `gorm:"column:id;primaryKey;autoIncrement"`
+	GroupId    int       `gorm:"column:group_id;primaryKey"`
+	Permission string    `gorm:"column:permission"`
+	Rejected   bool      `gorm:"column:rejected;default:false"`
+	CreatedAt  time.Time `gorm:"column:created_at;autoCreateTime"`
+	UpdatedAt  time.Time `gorm:"column:updated_at;autoCreateTime"`
+}
+
+func (GroupPermission) TableName() string {
+	return "group_permissions"
+}
+
+type Notification struct {
+	Id      int64     `gorm:"column:id;primaryKey;autoIncrement"`
+	UserId  int       `gorm:"column:user_id;primaryKey"`
+	Type    int       `gorm:"column:type"`
+	Header  string    `gorm:"column:header"`
+	Content string    `gorm:"column:content"`
+	Link    string    `gorm:"column:link"`
+	Read    bool      `gorm:"column:read;default:false"`
+	Time    time.Time `gorm:"column:time;autoCreateTime"`
+}
+
+func (Notification) TableName() string {
+	return "notifications"
+}
