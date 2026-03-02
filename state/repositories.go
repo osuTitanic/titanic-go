@@ -1,28 +1,27 @@
 package state
 
 import (
-	"github.com/osuTitanic/common-go/database"
 	"github.com/osuTitanic/common-go/repositories"
 	"gorm.io/gorm"
 )
 
 type Repositories struct {
 	// Users
-	Users             database.IUserRepository
-	Stats             database.IStatsRepository
-	Relationships     database.IRelationshipRepository
-	Badges            database.IBadgeRepository
-	Names             database.INameRepository
-	Infringements     database.IInfringementRepository
-	Reports           database.IReportRepository
-	Verifications     database.IVerificationRepository
-	Groups            database.IGroupRepository
-	GroupEntries      database.IGroupEntryRepository
-	UserPermissions   database.IUserPermissionRepository
-	GroupPermissions  database.IGroupPermissionRepository
-	Notifications     database.INotificationRepository
-	Achievements      database.IAchievementRepository
-	BeatmapFavourites database.IBeatmapFavouriteRepository
+	Users             *repositories.UserRepository
+	Stats             *repositories.StatsRepository
+	Relationships     *repositories.RelationshipRepository
+	Badges            *repositories.BadgeRepository
+	Names             *repositories.NameRepository
+	Infringements     *repositories.InfringementRepository
+	Reports           *repositories.ReportRepository
+	Verifications     *repositories.VerificationRepository
+	Groups            *repositories.GroupRepository
+	GroupEntries      *repositories.GroupEntryRepository
+	UserPermissions   *repositories.UserPermissionRepository
+	GroupPermissions  *repositories.GroupPermissionRepository
+	Notifications     *repositories.NotificationRepository
+	Achievements      *repositories.AchievementRepository
+	BeatmapFavourites *repositories.BeatmapFavouriteRepository
 
 	// Beatmaps
 	// TODO: ...
