@@ -35,5 +35,3 @@ func NewRankingsService(client *redis.Client) *RankingsService {
 		client: client,
 	}
 }
-
-// TODO: Add ranking type enum
