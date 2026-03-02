@@ -9,6 +9,7 @@ import (
 	"github.com/osuTitanic/common-go/database"
 	"github.com/osuTitanic/common-go/email"
 	"github.com/osuTitanic/common-go/logging"
+	"github.com/osuTitanic/common-go/performance"
 	"github.com/osuTitanic/common-go/rankings"
 	"github.com/osuTitanic/common-go/storage"
 	"github.com/redis/go-redis/v9"
@@ -30,6 +31,7 @@ type State struct {
 
 	// Services
 	Rankings *rankings.RankingsService
+	PPv1     *performance.PPv1Service
 }
 
 func NewState(environmentFiles ...string) (*State, error) {
@@ -79,6 +81,8 @@ func NewState(environmentFiles ...string) (*State, error) {
 		return nil, fmt.Errorf("state: failed to connect to Redis: %w", err)
 	}
 
+	repos := NewRepositories(db)
+
 	return &State{
 		Config:       cfg,
 		Database:     db,
@@ -86,8 +90,9 @@ func NewState(environmentFiles ...string) (*State, error) {
 		Logger:       logger,
 		Email:        mailer,
 		Redis:        redisClient,
-		Repositories: NewRepositories(db),
+		Repositories: repos,
 		Rankings:     rankings.NewRankingsService(redisClient),
+		PPv1:         performance.NewPPv1Service(repos.Scores, repos.Beatmaps),
 	}, nil
 }
 
