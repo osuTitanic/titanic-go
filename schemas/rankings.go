@@ -34,7 +34,7 @@ type Score struct {
 	Acc           float64               `gorm:"column:acc"`
 	TotalScore    int64                 `gorm:"column:total_score"`
 	MaxCombo      int                   `gorm:"column:max_combo"`
-	Mods          int                   `gorm:"column:mods"` // TODO: Use mods constant
+	Mods          constants.Mods        `gorm:"column:mods"`
 	Perfect       bool                  `gorm:"column:perfect"`
 	Count300      int                   `gorm:"column:n300"`
 	Count100      int                   `gorm:"column:n100"`
@@ -58,6 +58,10 @@ type Score struct {
 
 func (Score) TableName() string {
 	return "scores"
+}
+
+func (score *Score) Relaxing() bool {
+	return score.Mods.Has(constants.Relax) || score.Mods.Has(constants.Autopilot)
 }
 
 type RankHistory struct {
