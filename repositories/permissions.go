@@ -17,8 +17,13 @@ func (r *UserPermissionRepository) Create(permission *schemas.UserPermission) er
 	return r.db.Create(permission).Error
 }
 
-func (r *UserPermissionRepository) Update(id int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.UserPermission{}).Where("id = ?", id).Updates(updates)
+func (r *UserPermissionRepository) Update(updates *schemas.UserPermission, columns ...string) (int64, error) {
+	var result *gorm.DB
+	if len(columns) == 0 {
+		result = r.db.Save(&updates)
+	} else {
+		result = r.db.Model(&updates).Select(columns).Updates(&updates)
+	}
 	return result.RowsAffected, result.Error
 }
 
@@ -53,13 +58,17 @@ func (r *GroupPermissionRepository) Create(permission *schemas.GroupPermission) 
 	return r.db.Create(permission).Error
 }
 
-func (r *GroupPermissionRepository) Update(id int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.GroupPermission{}).Where("id = ?", id).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *GroupPermissionRepository) Delete(permission *schemas.GroupPermission) error {
 	return r.db.Delete(permission).Error
+}
+
+func (r *GroupPermissionRepository) Update(updates *schemas.GroupPermission, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *GroupPermissionRepository) ById(id int, preload ...string) (*schemas.GroupPermission, error) {

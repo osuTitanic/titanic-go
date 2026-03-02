@@ -17,13 +17,17 @@ func (r *VerificationRepository) Create(verification *schemas.Verification) erro
 	return r.db.Create(verification).Error
 }
 
-func (r *VerificationRepository) Update(id int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.Verification{}).Where("id = ?", id).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *VerificationRepository) Delete(verification *schemas.Verification) error {
 	return r.db.Delete(verification).Error
+}
+
+func (r *VerificationRepository) Update(updates *schemas.Verification, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *VerificationRepository) ById(id int, preload ...string) (*schemas.Verification, error) {

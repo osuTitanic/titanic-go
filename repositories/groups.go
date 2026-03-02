@@ -17,13 +17,17 @@ func (r *GroupRepository) Create(group *schemas.Group) error {
 	return r.db.Create(group).Error
 }
 
-func (r *GroupRepository) Update(id int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.Group{}).Where("id = ?", id).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *GroupRepository) Delete(group *schemas.Group) error {
 	return r.db.Delete(group).Error
+}
+
+func (r *GroupRepository) Update(updates *schemas.Group, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *GroupRepository) ById(id int, preload ...string) (*schemas.Group, error) {
@@ -58,8 +62,13 @@ func (r *GroupEntryRepository) Create(entry *schemas.GroupEntry) error {
 	return r.db.Create(entry).Error
 }
 
-func (r *GroupEntryRepository) Update(userId int, groupId int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.GroupEntry{}).Where("user_id = ? AND group_id = ?", userId, groupId).Updates(updates)
+func (r *GroupEntryRepository) Update(updates *schemas.GroupEntry, columns ...string) (int64, error) {
+	var result *gorm.DB
+	if len(columns) == 0 {
+		result = r.db.Save(&updates)
+	} else {
+		result = r.db.Model(&updates).Select(columns).Updates(&updates)
+	}
 	return result.RowsAffected, result.Error
 }
 

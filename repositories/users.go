@@ -19,13 +19,17 @@ func (r *UserRepository) Create(user *schemas.User) error {
 	return r.db.Create(user).Error
 }
 
-func (r *UserRepository) Update(id int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.User{}).Where("id = ?", id).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *UserRepository) Delete(user *schemas.User) error {
 	return r.db.Delete(user).Error
+}
+
+func (r *UserRepository) Update(updates *schemas.User, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *UserRepository) ById(id int, preload ...string) (*schemas.User, error) {

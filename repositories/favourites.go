@@ -17,13 +17,17 @@ func (r *BeatmapFavouriteRepository) Create(favourite *schemas.BeatmapFavourite)
 	return r.db.Create(favourite).Error
 }
 
-func (r *BeatmapFavouriteRepository) Update(userId int, setId int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.BeatmapFavourite{}).Where("user_id = ? AND set_id = ?", userId, setId).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *BeatmapFavouriteRepository) Delete(favourite *schemas.BeatmapFavourite) error {
 	return r.db.Delete(favourite).Error
+}
+
+func (r *BeatmapFavouriteRepository) Update(updates *schemas.BeatmapFavourite, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *BeatmapFavouriteRepository) ByUserAndSet(userId int, setId int, preload ...string) (*schemas.BeatmapFavourite, error) {

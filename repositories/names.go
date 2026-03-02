@@ -17,13 +17,17 @@ func (r *NameRepository) Create(name *schemas.Name) error {
 	return r.db.Create(name).Error
 }
 
-func (r *NameRepository) Update(id int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.Name{}).Where("id = ?", id).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *NameRepository) Delete(name *schemas.Name) error {
 	return r.db.Delete(name).Error
+}
+
+func (r *NameRepository) Update(updates *schemas.Name, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *NameRepository) ById(id int, preload ...string) (*schemas.Name, error) {

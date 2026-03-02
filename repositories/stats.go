@@ -17,13 +17,17 @@ func (r *StatsRepository) Create(stats *schemas.Stats) error {
 	return r.db.Create(stats).Error
 }
 
-func (r *StatsRepository) Update(userId int, mode int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.Stats{}).Where("id = ? AND mode = ?", userId, mode).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *StatsRepository) Delete(stats *schemas.Stats) error {
 	return r.db.Delete(stats).Error
+}
+
+func (r *StatsRepository) Update(updates *schemas.Stats, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *StatsRepository) ByMode(userId int, mode int, preload ...string) (*schemas.Stats, error) {

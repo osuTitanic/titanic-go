@@ -17,13 +17,17 @@ func (r *BadgeRepository) Create(badge *schemas.Badge) error {
 	return r.db.Create(badge).Error
 }
 
-func (r *BadgeRepository) Update(id int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.Badge{}).Where("id = ?", id).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *BadgeRepository) Delete(badge *schemas.Badge) error {
 	return r.db.Delete(badge).Error
+}
+
+func (r *BadgeRepository) Update(updates *schemas.Badge, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *BadgeRepository) ById(id int, preload ...string) (*schemas.Badge, error) {

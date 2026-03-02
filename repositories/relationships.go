@@ -17,13 +17,17 @@ func (r *RelationshipRepository) Create(relationship *schemas.Relationship) erro
 	return r.db.Create(relationship).Error
 }
 
-func (r *RelationshipRepository) Update(userId int, targetId int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.Relationship{}).Where("user_id = ? AND target_id = ?", userId, targetId).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *RelationshipRepository) Delete(relationship *schemas.Relationship) error {
 	return r.db.Delete(relationship).Error
+}
+
+func (r *RelationshipRepository) Update(updates *schemas.Relationship, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *RelationshipRepository) ByUserAndTarget(userId int, targetId int, preload ...string) (*schemas.Relationship, error) {

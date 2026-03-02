@@ -17,13 +17,17 @@ func (r *NotificationRepository) Create(notification *schemas.Notification) erro
 	return r.db.Create(notification).Error
 }
 
-func (r *NotificationRepository) Update(id int64, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.Notification{}).Where("id = ?", id).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *NotificationRepository) Delete(notification *schemas.Notification) error {
 	return r.db.Delete(notification).Error
+}
+
+func (r *NotificationRepository) Update(updates *schemas.Notification, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *NotificationRepository) ById(id int64, preload ...string) (*schemas.Notification, error) {

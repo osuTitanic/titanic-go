@@ -17,13 +17,17 @@ func (r *InfringementRepository) Create(infringement *schemas.Infringement) erro
 	return r.db.Create(infringement).Error
 }
 
-func (r *InfringementRepository) Update(id int, updates map[string]interface{}) (int64, error) {
-	result := r.db.Model(&schemas.Infringement{}).Where("id = ?", id).Updates(updates)
-	return result.RowsAffected, result.Error
-}
-
 func (r *InfringementRepository) Delete(infringement *schemas.Infringement) error {
 	return r.db.Delete(infringement).Error
+}
+
+func (r *InfringementRepository) Update(updates *schemas.Infringement, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Save(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(updates).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
 }
 
 func (r *InfringementRepository) ById(id int, preload ...string) (*schemas.Infringement, error) {
