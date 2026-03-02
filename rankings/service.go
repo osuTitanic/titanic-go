@@ -2,6 +2,8 @@ package rankings
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -11,9 +13,27 @@ type RankingsService struct {
 	client *redis.Client
 }
 
+func (service *RankingsService) RankingKey(mode int, rankType string, country *string) string {
+	countrySuffix := ""
+	if country != nil {
+		countrySuffix = ":" + strings.ToLower(*country)
+	}
+	return fmt.Sprintf("bancho:%s:%d%s", rankType, mode, countrySuffix)
+}
+
+func (service *RankingsService) RankingKeyNoMode(rankType string, country *string) string {
+	countrySuffix := ""
+	if country != nil {
+		countrySuffix = ":" + strings.ToLower(*country)
+	}
+	return fmt.Sprintf("bancho:%s%s", rankType, countrySuffix)
+}
+
 func NewRankingsService(client *redis.Client) *RankingsService {
 	return &RankingsService{
 		ctx:    context.Background(),
 		client: client,
 	}
 }
+
+// TODO: Add ranking type enum
