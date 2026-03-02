@@ -9,6 +9,7 @@ import (
 	"github.com/osuTitanic/common-go/database"
 	"github.com/osuTitanic/common-go/email"
 	"github.com/osuTitanic/common-go/logging"
+	"github.com/osuTitanic/common-go/rankings"
 	"github.com/osuTitanic/common-go/storage"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -21,11 +22,14 @@ type State struct {
 
 	// Core components
 	Config   *config.Config
-	Database *gorm.DB
 	Logger   *slog.Logger
+	Database *gorm.DB
+	Redis    *redis.Client
 	Storage  storage.Storage
 	Email    email.Email
-	Redis    *redis.Client
+
+	// Services
+	Rankings *rankings.RankingsService
 }
 
 func NewState(environmentFiles ...string) (*State, error) {
@@ -78,11 +82,12 @@ func NewState(environmentFiles ...string) (*State, error) {
 	return &State{
 		Config:       cfg,
 		Database:     db,
-		Logger:       logger,
 		Storage:      fs,
+		Logger:       logger,
 		Email:        mailer,
 		Redis:        redisClient,
 		Repositories: NewRepositories(db),
+		Rankings:     rankings.NewRankingsService(redisClient),
 	}, nil
 }
 
