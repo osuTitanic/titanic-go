@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"net/smtp"
 
-	"github.com/osuTitanic/common-go/config"
+	"github.com/osuTitanic/common-go/internal/config"
 )
 
 // SMTPEmail delivers messages using an SMTP server

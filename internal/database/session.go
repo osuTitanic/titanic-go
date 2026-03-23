@@ -3,7 +3,7 @@ package database
 import (
 	"time"
 
-	"github.com/osuTitanic/common-go/config"
+	"github.com/osuTitanic/common-go/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

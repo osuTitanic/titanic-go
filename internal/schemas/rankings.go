@@ -3,7 +3,7 @@ package schemas
 import (
 	"time"
 
-	"github.com/osuTitanic/common-go/constants"
+	"github.com/osuTitanic/common-go/internal/constants"
 )
 
 type Achievement struct {

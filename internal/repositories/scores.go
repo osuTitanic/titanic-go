@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"github.com/osuTitanic/common-go/constants"
-	"github.com/osuTitanic/common-go/schemas"
+	"github.com/osuTitanic/common-go/internal/constants"
+	"github.com/osuTitanic/common-go/internal/schemas"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

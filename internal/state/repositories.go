@@ -1,7 +1,7 @@
 package state
 
 import (
-	"github.com/osuTitanic/common-go/repositories"
+	"github.com/osuTitanic/common-go/internal/repositories"
 	"gorm.io/gorm"
 )
 

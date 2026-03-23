@@ -3,7 +3,7 @@ package repositories
 import (
 	"strings"
 
-	"github.com/osuTitanic/common-go/schemas"
+	"github.com/osuTitanic/common-go/internal/schemas"
 	"gorm.io/gorm"
 )
 

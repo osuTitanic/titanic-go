@@ -5,9 +5,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/osuTitanic/common-go/constants"
-	"github.com/osuTitanic/common-go/repositories"
-	"github.com/osuTitanic/common-go/schemas"
+	"github.com/osuTitanic/common-go/internal/constants"
+	"github.com/osuTitanic/common-go/internal/repositories"
+	"github.com/osuTitanic/common-go/internal/schemas"
 )
 
 // TODO: Make use of database transactions when updating multiple scores/beatmaps
