@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/osuTitanic/common-go/internal/config"
+	"github.com/osuTitanic/titanic-go/internal/config"
 )
 
 // Email defines the contract for email delivery backends

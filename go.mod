@@ -1,4 +1,4 @@
-module github.com/osuTitanic/common-go
+module github.com/osuTitanic/titanic-go
 
 go 1.24.6
 

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	_ "github.com/osuTitanic/common-go/internal/logging"
+	_ "github.com/osuTitanic/titanic-go/internal/logging"
 )
 
 type FileStorage struct {

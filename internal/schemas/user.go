@@ -3,7 +3,7 @@ package schemas
 import (
 	"time"
 
-	"github.com/osuTitanic/common-go/internal/constants"
+	"github.com/osuTitanic/titanic-go/internal/constants"
 )
 
 type User struct {

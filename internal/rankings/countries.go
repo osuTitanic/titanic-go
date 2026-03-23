@@ -4,7 +4,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/osuTitanic/common-go/internal/constants"
+	"github.com/osuTitanic/titanic-go/internal/constants"
 	"github.com/redis/go-redis/v9"
 )
 

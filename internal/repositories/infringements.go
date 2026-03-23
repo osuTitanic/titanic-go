@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"github.com/osuTitanic/common-go/internal/schemas"
+	"github.com/osuTitanic/titanic-go/internal/schemas"
 	"gorm.io/gorm"
 )
 

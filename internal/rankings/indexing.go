@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/osuTitanic/common-go/internal/constants"
-	"github.com/osuTitanic/common-go/internal/schemas"
+	"github.com/osuTitanic/titanic-go/internal/constants"
+	"github.com/osuTitanic/titanic-go/internal/schemas"
 	"github.com/redis/go-redis/v9"
 )
 
