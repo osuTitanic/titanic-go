@@ -41,6 +41,6 @@ func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (stri
 	if err != nil {
 		l.logger.Error("Trace", "error", err, "elapsed", elapsed, "rows", rows, "sql", sql)
 	} else {
-		l.logger.Info("Trace", "elapsed", elapsed, "rows", rows, "sql", sql)
+		l.logger.Debug("Trace", "elapsed", elapsed, "rows", rows, "sql", sql)
 	}
 }
