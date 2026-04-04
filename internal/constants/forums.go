@@ -18,3 +18,7 @@ const (
 	ForumIconCatch       ForumIcon = 13
 	ForumIconMania       ForumIcon = 14
 )
+
+func (icon ForumIcon) Pointer() *ForumIcon {
+	return &icon
+}
