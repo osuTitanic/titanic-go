@@ -12,6 +12,10 @@ import (
 
 type TaskList map[string]func(*state.State, *slog.Logger) error
 
+var availableTasks = TaskList{
+	"stats_website": tasks.UpdateWebsiteStats,
+}
+
 func (t *TaskList) List() {
 	slog.Info("Available tasks:")
 	for name := range availableTasks {
@@ -19,22 +23,12 @@ func (t *TaskList) List() {
 	}
 }
 
-var availableTasks = TaskList{
-	"stats_website": tasks.UpdateWebsiteStats,
-}
-
-type SchedulerConfig struct {
-	Name       string  `json:"name"`
-	Interval   int     `json:"interval"` // in seconds
-	IntervalAt *string `json:"interval_at"`
-}
-
 func main() {
 	listFlag := flag.Bool("list", false, "list all tasks")
+	fileFlag := flag.String("file", "", "specify a scheduler file")
 	nameFlag := flag.String("name", "", "run a specific task by name")
 	intervalFlag := flag.Int("interval", 0, "the interval to run the task in (seconds)")
 	intervalAtFlag := flag.String("interval-at", "", "specify the time period at which the task should run (e.g. 15:00)")
-	fileFlag := flag.String("file", "", "specify the scheduler file")
 	flag.Parse()
 
 	if *listFlag {

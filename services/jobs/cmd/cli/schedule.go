@@ -12,36 +12,10 @@ import (
 	"github.com/osuTitanic/titanic-go/services/jobs/internal/scheduler"
 )
 
-func ScheduleTask(app *state.State, s *scheduler.Scheduler, name string, interval int, intervalAt string) error {
-	taskFunc, ok := availableTasks[name]
-	if !ok {
-		return fmt.Errorf("unknown task: %s", name)
-	}
-
-	period := time.Duration(interval) * time.Second
-	schedule := scheduler.Every(period)
-
-	task := s.Add(schedule, taskFunc)
-	task.SetLogger("tasks/" + name)
-
-	if intervalAt != "" {
-		task.Schedule = schedule.At(intervalAt)
-	}
-
-	app.Logger.Info("Scheduled task", "name", name, "interval", interval)
-	return nil
-}
-
-func StartSchedulerAndWait(app *state.State, s *scheduler.Scheduler) {
-	s.Start(app)
-	app.Logger.Info("Scheduler started")
-
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
-	<-sigChan
-
-	app.Logger.Info("Shutting down...")
-	s.Stop()
+type SchedulerConfig struct {
+	Name       string  `json:"name"`
+	Interval   int     `json:"interval"` // in seconds
+	IntervalAt *string `json:"interval_at"`
 }
 
 func RunSchedulerFile(app *state.State, filename string) error {
@@ -74,4 +48,36 @@ func RunSchedulerFile(app *state.State, filename string) error {
 
 	StartSchedulerAndWait(app, s)
 	return nil
+}
+
+func ScheduleTask(app *state.State, s *scheduler.Scheduler, name string, interval int, intervalAt string) error {
+	taskFunc, ok := availableTasks[name]
+	if !ok {
+		return fmt.Errorf("unknown task: %s", name)
+	}
+
+	period := time.Duration(interval) * time.Second
+	schedule := scheduler.Every(period)
+
+	task := s.Add(schedule, taskFunc)
+	task.SetLogger("tasks/" + name)
+
+	if intervalAt != "" {
+		task.Schedule = schedule.At(intervalAt)
+	}
+
+	app.Logger.Info("Scheduled task", "name", name, "interval", interval)
+	return nil
+}
+
+func StartSchedulerAndWait(app *state.State, s *scheduler.Scheduler) {
+	s.Start(app)
+	app.Logger.Info("Scheduler started")
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	<-sigChan
+
+	app.Logger.Info("Shutting down...")
+	s.Stop()
 }
