@@ -54,3 +54,9 @@ func (r *BeatmapsetRepository) GetCount() (int, error) {
 	err := r.db.Model(&schemas.Beatmapset{}).Count(&count).Error
 	return int(count), err
 }
+
+func (r *BeatmapsetRepository) FetchByStatus(status int, preload ...string) ([]*schemas.Beatmapset, error) {
+	var beatmapsets []*schemas.Beatmapset
+	err := Preloaded(r.db, preload).Where("status = ?", status).Find(&beatmapsets).Error
+	return beatmapsets, err
+}

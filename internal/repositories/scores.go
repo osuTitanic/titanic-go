@@ -32,6 +32,15 @@ func (r *ScoreRepository) Update(updates *schemas.Score, columns ...string) (int
 	return result.RowsAffected, result.Error
 }
 
+func (r *ScoreRepository) UpdateByBeatmapId(beatmapId int, updates *schemas.Score, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Model(&schemas.Score{}).Where("beatmap_id = ?", beatmapId).Updates(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(&schemas.Score{}).Where("beatmap_id = ?", beatmapId).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
+}
+
 func (r *ScoreRepository) ById(id int64, preload ...string) (*schemas.Score, error) {
 	var score schemas.Score
 	err := Preloaded(r.db, preload).Where("id = ?", id).First(&score).Error

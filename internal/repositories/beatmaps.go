@@ -30,6 +30,15 @@ func (r *BeatmapRepository) Update(updates *schemas.Beatmap, columns ...string) 
 	return result.RowsAffected, result.Error
 }
 
+func (r *BeatmapRepository) UpdateBySetId(setId int, updates *schemas.Beatmap, columns ...string) (int64, error) {
+	if len(columns) == 0 {
+		result := r.db.Model(&schemas.Beatmap{}).Where("set_id = ?", setId).Updates(updates)
+		return result.RowsAffected, result.Error
+	}
+	result := r.db.Model(&schemas.Beatmap{}).Where("set_id = ?", setId).Select(columns).Updates(updates)
+	return result.RowsAffected, result.Error
+}
+
 func (r *BeatmapRepository) ById(id int, preload ...string) (*schemas.Beatmap, error) {
 	var beatmap schemas.Beatmap
 	err := Preloaded(r.db, preload).Where("id = ?", id).First(&beatmap).Error
