@@ -64,6 +64,18 @@ func (Beatmapset) TableName() string {
 	return "beatmapsets"
 }
 
+func (b *Beatmapset) Name() string {
+	artist := "Unknown Artist"
+	title := "Unknown Title"
+	if b.Artist != nil {
+		artist = *b.Artist
+	}
+	if b.Title != nil {
+		title = *b.Title
+	}
+	return artist + " - " + title
+}
+
 type Beatmap struct {
 	Id               int                     `gorm:"column:id;primaryKey;autoIncrement"`
 	SetId            int                     `gorm:"column:set_id"`
