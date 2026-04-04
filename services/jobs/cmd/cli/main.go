@@ -13,7 +13,8 @@ import (
 type TaskList map[string]func(*state.State, *slog.Logger) error
 
 var availableTasks = TaskList{
-	"stats_website": tasks.UpdateWebsiteStats,
+	"stats_website":    tasks.UpdateWebsiteStats,
+	"beatmap_statuses": tasks.UpdateBeatmapStatuses,
 }
 
 func (t *TaskList) List() {
