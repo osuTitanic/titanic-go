@@ -15,7 +15,9 @@ func RunSingleTask(app *state.State, name string, interval int, intervalAt strin
 
 	if interval > 0 {
 		s := scheduler.New()
-		return ScheduleTask(app, s, name, interval, intervalAt)
+		ScheduleTask(app, s, name, interval, intervalAt)
+		StartSchedulerAndWait(app, s)
+		return nil
 	}
 
 	app.Logger.Info("Running task", "name", name)

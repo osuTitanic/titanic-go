@@ -29,7 +29,6 @@ func ScheduleTask(app *state.State, s *scheduler.Scheduler, name string, interva
 	}
 
 	app.Logger.Info("Scheduled task", "name", name, "interval", interval)
-	StartSchedulerAndWait(app, s)
 	return nil
 }
 
