@@ -51,6 +51,12 @@ func (r *ScoreRepository) ManyById(ids []int64, preload ...string) ([]*schemas.S
 	return scores, err
 }
 
+func (r *ScoreRepository) GetCount() (int64, error) {
+	var count int64
+	err := r.db.Model(&schemas.Score{}).Count(&count).Error
+	return count, err
+}
+
 func (r *ScoreRepository) FetchScoreIndexById(scoreId int64, beatmapId int, mode constants.Mode) (int, error) {
 	var rank int
 	err := r.db.Raw(`

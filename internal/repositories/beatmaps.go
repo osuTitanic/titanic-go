@@ -48,3 +48,29 @@ func (r *BeatmapRepository) ManyById(ids []int, preload ...string) ([]*schemas.B
 	err := Preloaded(r.db, preload).Where("id IN ?", ids).Find(&beatmaps).Error
 	return beatmaps, err
 }
+
+func (r *BeatmapRepository) GetCount() (int, error) {
+	var count int64
+	err := r.db.Model(&schemas.Beatmap{}).Count(&count).Error
+	return int(count), err
+}
+
+func (r *BeatmapRepository) GetCountGroupedByStatus(mode int) (map[int]int, error) {
+	var results []struct {
+		Status int
+		Count  int
+	}
+
+	err := r.db.Model(&schemas.Beatmap{}).
+		Select("status, count(*) as count").
+		Where("mode = ?", mode).
+		Group("status").
+		Scan(&results).Error
+
+	counts := make(map[int]int)
+	for _, res := range results {
+		counts[res.Status] = res.Count
+	}
+
+	return counts, err
+}

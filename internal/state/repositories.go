@@ -24,7 +24,8 @@ type Repositories struct {
 	BeatmapFavourites *repositories.BeatmapFavouriteRepository
 
 	// Beatmaps
-	Beatmaps *repositories.BeatmapRepository
+	Beatmaps    *repositories.BeatmapRepository
+	Beatmapsets *repositories.BeatmapsetRepository
 
 	// Rankings
 	Scores *repositories.ScoreRepository
@@ -51,6 +52,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Achievements:      repositories.NewAchievementRepository(db),
 		BeatmapFavourites: repositories.NewBeatmapFavouriteRepository(db),
 		Beatmaps:          repositories.NewBeatmapRepository(db),
+		Beatmapsets:       repositories.NewBeatmapsetRepository(db),
 		Scores:            repositories.NewScoreRepository(db),
 	}
 }
