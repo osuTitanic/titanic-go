@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/osuTitanic/titanic-go/internal/schemas"
 	"gorm.io/gorm"
 )
@@ -30,12 +32,11 @@ func (r *PostRepository) Update(updates *schemas.ForumPost, columns ...string) (
 	return result.RowsAffected, result.Error
 }
 
-func (r *PostRepository) UpdateByTopic(topicId int, updates *schemas.ForumPost, columns ...string) (int64, error) {
+func (r *PostRepository) UpdateByTopic(updates *schemas.ForumPost, columns ...string) (int64, error) {
 	if len(columns) == 0 {
-		result := r.db.Model(&schemas.ForumPost{}).Where("topic_id = ?", topicId).Updates(updates)
-		return result.RowsAffected, result.Error
+		return 0, errors.New("at least one column must be specified")
 	}
-	result := r.db.Model(&schemas.ForumPost{}).Where("topic_id = ?", topicId).Select(columns).Updates(updates)
+	result := r.db.Model(&schemas.ForumPost{}).Where("topic_id = ?", updates.TopicId).Select(columns).Updates(updates)
 	return result.RowsAffected, result.Error
 }
 

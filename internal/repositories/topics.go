@@ -21,12 +21,12 @@ func (r *TopicRepository) Delete(topic *schemas.ForumTopic) error {
 	return r.db.Delete(topic).Error
 }
 
-func (r *TopicRepository) Update(id int, updates *schemas.ForumTopic, columns ...string) (int64, error) {
+func (r *TopicRepository) Update(updates *schemas.ForumTopic, columns ...string) (int64, error) {
 	if len(columns) == 0 {
-		result := r.db.Model(&schemas.ForumTopic{}).Where("id = ?", id).Updates(updates)
+		result := r.db.Save(updates)
 		return result.RowsAffected, result.Error
 	}
-	result := r.db.Model(&schemas.ForumTopic{}).Where("id = ?", id).Select(columns).Updates(updates)
+	result := r.db.Model(updates).Select(columns).Updates(updates)
 	return result.RowsAffected, result.Error
 }
 

@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/osuTitanic/titanic-go/internal/schemas"
 	"gorm.io/gorm"
 )
@@ -30,12 +32,11 @@ func (r *BeatmapRepository) Update(updates *schemas.Beatmap, columns ...string) 
 	return result.RowsAffected, result.Error
 }
 
-func (r *BeatmapRepository) UpdateBySetId(setId int, updates *schemas.Beatmap, columns ...string) (int64, error) {
+func (r *BeatmapRepository) UpdateBySetId(updates *schemas.Beatmap, columns ...string) (int64, error) {
 	if len(columns) == 0 {
-		result := r.db.Model(&schemas.Beatmap{}).Where("set_id = ?", setId).Updates(updates)
-		return result.RowsAffected, result.Error
+		return 0, errors.New("at least one column must be specified")
 	}
-	result := r.db.Model(&schemas.Beatmap{}).Where("set_id = ?", setId).Select(columns).Updates(updates)
+	result := r.db.Model(&schemas.Beatmap{}).Where("set_id = ?", updates.SetId).Select(columns).Updates(updates)
 	return result.RowsAffected, result.Error
 }
 

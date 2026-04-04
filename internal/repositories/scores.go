@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/osuTitanic/titanic-go/internal/constants"
 	"github.com/osuTitanic/titanic-go/internal/schemas"
 	"gorm.io/gorm"
@@ -32,12 +34,11 @@ func (r *ScoreRepository) Update(updates *schemas.Score, columns ...string) (int
 	return result.RowsAffected, result.Error
 }
 
-func (r *ScoreRepository) UpdateByBeatmapId(beatmapId int, updates *schemas.Score, columns ...string) (int64, error) {
+func (r *ScoreRepository) UpdateByBeatmapId(updates *schemas.Score, columns ...string) (int64, error) {
 	if len(columns) == 0 {
-		result := r.db.Model(&schemas.Score{}).Where("beatmap_id = ?", beatmapId).Updates(updates)
-		return result.RowsAffected, result.Error
+		return 0, errors.New("at least one column must be specified")
 	}
-	result := r.db.Model(&schemas.Score{}).Where("beatmap_id = ?", beatmapId).Select(columns).Updates(updates)
+	result := r.db.Model(&schemas.Score{}).Where("beatmap_id = ?", updates.BeatmapId).Select(columns).Updates(updates)
 	return result.RowsAffected, result.Error
 }
 
