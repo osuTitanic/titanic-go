@@ -22,7 +22,7 @@ func ScheduleTask(app *state.State, s *scheduler.Scheduler, name string, interva
 	schedule := scheduler.Every(period)
 
 	task := s.Add(schedule, taskFunc)
-	task.SetLogger(name)
+	task.SetLogger("tasks/" + name)
 
 	if intervalAt != "" {
 		task.Schedule = schedule.At(intervalAt)

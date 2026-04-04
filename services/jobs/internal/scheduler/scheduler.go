@@ -117,7 +117,7 @@ func (c *Scheduler) run(app *state.State) {
 
 func (c *Scheduler) runTask(app *state.State, task *Task) {
 	if task.Logger == nil {
-		task.Logger = slog.Default().With("component", "task")
+		task.Logger = slog.Default().With("component", "tasks")
 	}
 
 	defer func() {
