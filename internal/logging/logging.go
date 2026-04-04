@@ -23,6 +23,7 @@ const (
 type ColorLogger struct {
 	out   io.Writer
 	level slog.Level
+	attrs []slog.Attr
 }
 
 func NewColorLogger(out io.Writer, level slog.Level) *ColorLogger {
@@ -58,16 +59,24 @@ func (h *ColorLogger) Handle(_ context.Context, record slog.Record) error {
 	var attrString string
 	var component string
 
-	// Extract attributes
-	record.Attrs(func(a slog.Attr) bool {
+	processAttr := func(a slog.Attr) {
 		if a.Key == "component" {
 			component = a.Value.String()
 		} else {
 			attrs = append(attrs, formatAttr(a))
 		}
+	}
+	for _, a := range h.attrs {
+		processAttr(a)
+	}
+
+	// Extract attributes from the record and format them
+	record.Attrs(func(a slog.Attr) bool {
+		processAttr(a)
 		return true
 	})
 
+	// If no "component" attribute is found, we use `titanic` by default
 	if component == "" {
 		component = "titanic"
 	}
@@ -96,7 +105,14 @@ func (h *ColorLogger) Handle(_ context.Context, record slog.Record) error {
 }
 
 func (h *ColorLogger) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return h
+	newAttrs := make([]slog.Attr, 0, len(h.attrs)+len(attrs))
+	newAttrs = append(newAttrs, h.attrs...)
+	newAttrs = append(newAttrs, attrs...)
+	return &ColorLogger{
+		out:   h.out,
+		level: h.level,
+		attrs: newAttrs,
+	}
 }
 
 func (h *ColorLogger) WithGroup(name string) slog.Handler {
