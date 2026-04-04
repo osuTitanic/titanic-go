@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/osuTitanic/titanic-go/internal/constants"
 	"github.com/osuTitanic/titanic-go/internal/schemas"
 	"gorm.io/gorm"
 )
@@ -55,7 +56,7 @@ func (r *BeatmapsetRepository) GetCount() (int, error) {
 	return int(count), err
 }
 
-func (r *BeatmapsetRepository) FetchByStatus(status int, preload ...string) ([]*schemas.Beatmapset, error) {
+func (r *BeatmapsetRepository) FetchByStatus(status constants.BeatmapStatus, preload ...string) ([]*schemas.Beatmapset, error) {
 	var beatmapsets []*schemas.Beatmapset
 	err := Preloaded(r.db, preload).Where("status = ?", status).Find(&beatmapsets).Error
 	return beatmapsets, err
