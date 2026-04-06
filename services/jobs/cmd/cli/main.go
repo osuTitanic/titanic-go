@@ -15,6 +15,7 @@ type TaskList map[string]func(*state.State, *slog.Logger) error
 var availableTasks = TaskList{
 	"stats_website":    tasks.UpdateWebsiteStats,
 	"beatmap_statuses": tasks.UpdateBeatmapStatuses,
+	"ppv1_updates":     tasks.UpdatePPv1,
 }
 
 func (t *TaskList) List() {
