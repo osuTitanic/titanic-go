@@ -74,7 +74,10 @@ func updatePPv1ForUser(app *state.State, logger *slog.Logger, user *schemas.User
 
 		app.Repositories.Stats.Update(stats, "ppv1")
 		app.Rankings.Update(stats, user.Country)
-		// TODO: Update rank history
+
+		if !app.Config.FrozenRankUpdates {
+			app.Repositories.Histories.UpdateRank(stats, user.Country, app.Rankings)
+		}
 
 		logger.Debug(
 			"ppv1 update",
