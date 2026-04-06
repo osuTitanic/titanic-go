@@ -10,8 +10,6 @@ import (
 	"github.com/osuTitanic/titanic-go/internal/schemas"
 )
 
-// TODO: Make use of database transactions when updating multiple scores/beatmaps
-
 // PPv1Service is responsible for calculating performance points (v1) for scores.
 // ppv1 reference: https://gist.github.com/peppy/4f8fcb6629d300c56ebe80156b20b76c
 type PPv1Service struct {

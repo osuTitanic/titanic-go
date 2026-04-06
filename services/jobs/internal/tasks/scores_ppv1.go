@@ -5,6 +5,7 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/osuTitanic/titanic-go/internal/performance"
 	"github.com/osuTitanic/titanic-go/internal/schemas"
 	"github.com/osuTitanic/titanic-go/internal/state"
 )
@@ -29,14 +30,12 @@ func UpdatePPv1(app *state.State, logger *slog.Logger) error {
 	sort.Slice(userList, func(i, j int) bool {
 		return resolveUserPPv1(userList[i]) > resolveUserPPv1(userList[j])
 	})
-
 	var wg sync.WaitGroup
 
-	performUpdate := func(u *schemas.User) {
+	performUpdate := func(user *schemas.User) {
 		defer wg.Done()
-		err := updatePPv1ForUser(app, logger, u)
-		if err != nil {
-			logger.Error("Failed to update user", "id", u.Id, "error", err)
+		if err := updatePPv1ForUser(app, logger, user); err != nil {
+			logger.Error("Failed to update user", "id", user.Id, "error", err)
 		}
 	}
 	for _, user := range userList {
@@ -49,45 +48,52 @@ func UpdatePPv1(app *state.State, logger *slog.Logger) error {
 }
 
 func updatePPv1ForUser(app *state.State, logger *slog.Logger, user *schemas.User) error {
-	for _, stats := range user.Stats {
-		if stats.Playcount <= 0 {
-			continue
-		}
-
-		bestScores, err := app.Repositories.Scores.FetchBest(
-			user.Id,
-			stats.Mode,
-			!app.Config.ApprovedMapRewards,
-			"Beatmap",
+	return app.DatabaseTransaction(func(repositories *state.Repositories) error {
+		ppv1 := performance.NewPPv1Service(
+			repositories.Scores,
+			repositories.Beatmaps,
 		)
-		if err != nil {
-			return err
+
+		for _, stats := range user.Stats {
+			if stats.Playcount <= 0 {
+				continue
+			}
+
+			bestScores, err := repositories.Scores.FetchBest(
+				user.Id,
+				stats.Mode,
+				!app.Config.ApprovedMapRewards,
+				"Beatmap",
+			)
+			if err != nil {
+				return err
+			}
+			if len(bestScores) == 0 {
+				continue
+			}
+
+			stats.PPv1, err = ppv1.RecalculateWeightFromScores(bestScores)
+			if err != nil {
+				return err
+			}
+
+			repositories.Stats.Update(stats, "ppv1")
+			app.Rankings.Update(stats, user.Country)
+
+			if !app.Config.FrozenRankUpdates {
+				repositories.Histories.UpdateRank(stats, user.Country, app.Rankings)
+			}
+
+			logger.Debug(
+				"ppv1 update",
+				"id", user.Id, "name", user.Name,
+				"mode", stats.Mode, "ppv1", stats.PPv1,
+			)
 		}
-		if len(bestScores) == 0 {
-			continue
-		}
 
-		stats.PPv1, err = app.PPv1.RecalculateWeightFromScores(bestScores)
-		if err != nil {
-			return err
-		}
-
-		app.Repositories.Stats.Update(stats, "ppv1")
-		app.Rankings.Update(stats, user.Country)
-
-		if !app.Config.FrozenRankUpdates {
-			app.Repositories.Histories.UpdateRank(stats, user.Country, app.Rankings)
-		}
-
-		logger.Debug(
-			"ppv1 update",
-			"id", user.Id, "name", user.Name,
-			"mode", stats.Mode, "ppv1", stats.PPv1,
-		)
-	}
-
-	logger.Info("Updated ppv1 for user", "name", user.Name, "id", user.Id)
-	return nil
+		logger.Info("Updated ppv1 for user", "name", user.Name, "id", user.Id)
+		return nil
+	})
 }
 
 func resolveUserPPv1(user *schemas.User) float64 {
