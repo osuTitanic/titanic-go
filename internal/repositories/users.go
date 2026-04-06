@@ -77,6 +77,18 @@ func (r *UserRepository) ByDiscordId(discordId int64, preload ...string) (*schem
 	return &user, nil
 }
 
+func (r *UserRepository) Many(critera map[string]any, preload ...string) ([]*schemas.User, error) {
+	var users []*schemas.User
+	query := Preloaded(r.db, preload)
+
+	for key, value := range critera {
+		query = query.Where(key, value)
+	}
+
+	err := query.Find(&users).Error
+	return users, err
+}
+
 func (r *UserRepository) ManyById(userIds []int, preload ...string) ([]*schemas.User, error) {
 	if len(userIds) == 0 {
 		return []*schemas.User{}, nil
