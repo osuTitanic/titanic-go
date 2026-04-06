@@ -22,12 +22,7 @@ func (r *NotificationRepository) Delete(notification *schemas.Notification) erro
 }
 
 func (r *NotificationRepository) Update(updates *schemas.Notification, columns ...string) (int64, error) {
-	if len(columns) == 0 {
-		result := r.db.Save(updates)
-		return result.RowsAffected, result.Error
-	}
-	result := r.db.Model(updates).Select(columns).Updates(updates)
-	return result.RowsAffected, result.Error
+	return CommonUpdate(r.db, updates, columns...)
 }
 
 func (r *NotificationRepository) ById(id int64, preload ...string) (*schemas.Notification, error) {

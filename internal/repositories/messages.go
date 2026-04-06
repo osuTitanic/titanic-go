@@ -32,21 +32,11 @@ func (r *MessageRepository) DeletePrivate(message *schemas.DirectMessage) error 
 }
 
 func (r *MessageRepository) Update(updates *schemas.Message, columns ...string) (int64, error) {
-	if len(columns) == 0 {
-		result := r.db.Save(updates)
-		return result.RowsAffected, result.Error
-	}
-	result := r.db.Model(updates).Select(columns).Updates(updates)
-	return result.RowsAffected, result.Error
+	return CommonUpdate(r.db, updates, columns...)
 }
 
 func (r *MessageRepository) UpdatePrivate(updates *schemas.DirectMessage, columns ...string) (int64, error) {
-	if len(columns) == 0 {
-		result := r.db.Save(updates)
-		return result.RowsAffected, result.Error
-	}
-	result := r.db.Model(updates).Select(columns).Updates(updates)
-	return result.RowsAffected, result.Error
+	return CommonUpdate(r.db, updates, columns...)
 }
 
 func (r *MessageRepository) UpdatePrivateAll(updates *schemas.DirectMessage, columns ...string) (int64, error) {

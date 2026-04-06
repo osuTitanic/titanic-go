@@ -17,18 +17,12 @@ func (r *UserPermissionRepository) Create(permission *schemas.UserPermission) er
 	return r.db.Create(permission).Error
 }
 
-func (r *UserPermissionRepository) Update(updates *schemas.UserPermission, columns ...string) (int64, error) {
-	var result *gorm.DB
-	if len(columns) == 0 {
-		result = r.db.Save(&updates)
-	} else {
-		result = r.db.Model(&updates).Select(columns).Updates(&updates)
-	}
-	return result.RowsAffected, result.Error
-}
-
 func (r *UserPermissionRepository) Delete(permission *schemas.UserPermission) error {
 	return r.db.Delete(permission).Error
+}
+
+func (r *UserPermissionRepository) Update(updates *schemas.UserPermission, columns ...string) (int64, error) {
+	return CommonUpdate(r.db, updates, columns...)
 }
 
 func (r *UserPermissionRepository) ById(id int, preload ...string) (*schemas.UserPermission, error) {

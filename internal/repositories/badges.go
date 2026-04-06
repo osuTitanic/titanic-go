@@ -22,12 +22,7 @@ func (r *BadgeRepository) Delete(badge *schemas.Badge) error {
 }
 
 func (r *BadgeRepository) Update(updates *schemas.Badge, columns ...string) (int64, error) {
-	if len(columns) == 0 {
-		result := r.db.Save(updates)
-		return result.RowsAffected, result.Error
-	}
-	result := r.db.Model(updates).Select(columns).Updates(updates)
-	return result.RowsAffected, result.Error
+	return CommonUpdate(r.db, updates, columns...)
 }
 
 func (r *BadgeRepository) ById(id int, preload ...string) (*schemas.Badge, error) {

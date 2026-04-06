@@ -26,12 +26,7 @@ func (r *ScoreRepository) Delete(score *schemas.Score) error {
 }
 
 func (r *ScoreRepository) Update(updates *schemas.Score, columns ...string) (int64, error) {
-	if len(columns) == 0 {
-		result := r.db.Save(updates)
-		return result.RowsAffected, result.Error
-	}
-	result := r.db.Model(updates).Select(columns).Updates(updates)
-	return result.RowsAffected, result.Error
+	return CommonUpdate(r.db, updates, columns...)
 }
 
 func (r *ScoreRepository) UpdateByBeatmapId(updates *schemas.Score, columns ...string) (int64, error) {
@@ -68,8 +63,7 @@ func (r *ScoreRepository) GetCount() (int64, error) {
 }
 
 func (r *ScoreRepository) FetchScoreIndexById(scoreId int64, beatmapId int, mode constants.Mode) (int, error) {
-	var rank int
-	err := r.db.Raw(`
+	rankQuery := `
 		SELECT ranked.rank
 		FROM (
 			SELECT
@@ -83,7 +77,9 @@ func (r *ScoreRepository) FetchScoreIndexById(scoreId int64, beatmapId int, mode
 		) AS ranked
 		WHERE ranked.id = ?
 		LIMIT 1
-	`, beatmapId, mode, scoreId).Scan(&rank).Error
+	`
+	var rank int
+	err := r.db.Raw(rankQuery, beatmapId, mode, scoreId).Scan(&rank).Error
 	if err != nil {
 		return 0, err
 	}
@@ -99,7 +95,7 @@ func (r *ScoreRepository) FetchScoreIndexByTscore(totalScore int64, beatmapId in
 		Where("mode = ?", mode).
 		Where("status_score = 3").
 		Where("hidden = FALSE").
-		Order(clause.Expr{SQL: "ABS(total_score - ?)", Vars: []interface{}{totalScore}}).
+		Order(clause.Expr{SQL: "ABS(total_score - ?)", Vars: []any{totalScore}}).
 		Order("id ASC").
 		First(&closestScore).Error
 

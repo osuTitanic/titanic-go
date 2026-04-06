@@ -22,12 +22,7 @@ func (r *BeatmapFavouriteRepository) Delete(favourite *schemas.BeatmapFavourite)
 }
 
 func (r *BeatmapFavouriteRepository) Update(updates *schemas.BeatmapFavourite, columns ...string) (int64, error) {
-	if len(columns) == 0 {
-		result := r.db.Save(updates)
-		return result.RowsAffected, result.Error
-	}
-	result := r.db.Model(updates).Select(columns).Updates(updates)
-	return result.RowsAffected, result.Error
+	return CommonUpdate(r.db, updates, columns...)
 }
 
 func (r *BeatmapFavouriteRepository) ByUserAndSet(userId int, setId int, preload ...string) (*schemas.BeatmapFavourite, error) {

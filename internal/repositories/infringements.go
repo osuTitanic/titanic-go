@@ -22,12 +22,7 @@ func (r *InfringementRepository) Delete(infringement *schemas.Infringement) erro
 }
 
 func (r *InfringementRepository) Update(updates *schemas.Infringement, columns ...string) (int64, error) {
-	if len(columns) == 0 {
-		result := r.db.Save(updates)
-		return result.RowsAffected, result.Error
-	}
-	result := r.db.Model(updates).Select(columns).Updates(updates)
-	return result.RowsAffected, result.Error
+	return CommonUpdate(r.db, updates, columns...)
 }
 
 func (r *InfringementRepository) ById(id int, preload ...string) (*schemas.Infringement, error) {
