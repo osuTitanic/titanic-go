@@ -4,6 +4,7 @@ import (
 	"math"
 	"strconv"
 
+	"github.com/osuTitanic/titanic-go/internal/constants"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -27,7 +28,7 @@ func (service *RankingsService) ScoreByKey(key string, userId int) (float64, err
 	return 0, err
 }
 
-func (service *RankingsService) Performance(userId int, mode int) (float64, error) {
+func (service *RankingsService) Performance(userId int, mode constants.Mode) (float64, error) {
 	value, err := service.ScoreByKey(service.RankingKey(mode, "performance", nil), userId)
 	if err != nil {
 		return 0, err
@@ -35,7 +36,7 @@ func (service *RankingsService) Performance(userId int, mode int) (float64, erro
 	return value, nil
 }
 
-func (service *RankingsService) Score(userId int, mode int) (int64, error) {
+func (service *RankingsService) Score(userId int, mode constants.Mode) (int64, error) {
 	value, err := service.ScoreByKey(service.RankingKey(mode, "rscore", nil), userId)
 	if err != nil {
 		return 0, err
@@ -43,7 +44,7 @@ func (service *RankingsService) Score(userId int, mode int) (int64, error) {
 	return int64(math.Round(value)), nil
 }
 
-func (service *RankingsService) TotalScore(userId int, mode int) (int64, error) {
+func (service *RankingsService) TotalScore(userId int, mode constants.Mode) (int64, error) {
 	value, err := service.ScoreByKey(service.RankingKey(mode, "tscore", nil), userId)
 	if err != nil {
 		return 0, err
@@ -51,7 +52,7 @@ func (service *RankingsService) TotalScore(userId int, mode int) (int64, error) 
 	return int64(math.Round(value)), nil
 }
 
-func (service *RankingsService) Accuracy(userId int, mode int) (float64, error) {
+func (service *RankingsService) Accuracy(userId int, mode constants.Mode) (float64, error) {
 	value, err := service.ScoreByKey(service.RankingKey(mode, "acc", nil), userId)
 	if err != nil {
 		return 0, err
@@ -59,7 +60,7 @@ func (service *RankingsService) Accuracy(userId int, mode int) (float64, error) 
 	return value, nil
 }
 
-func (service *RankingsService) PPv1(userId int, mode int) (float64, error) {
+func (service *RankingsService) PPv1(userId int, mode constants.Mode) (float64, error) {
 	value, err := service.ScoreByKey(service.RankingKey(mode, "ppv1", nil), userId)
 	if err != nil {
 		return 0, err
@@ -67,7 +68,7 @@ func (service *RankingsService) PPv1(userId int, mode int) (float64, error) {
 	return value, nil
 }
 
-func (service *RankingsService) Clears(userId int, mode int) (int64, error) {
+func (service *RankingsService) Clears(userId int, mode constants.Mode) (int64, error) {
 	value, err := service.ScoreByKey(service.RankingKey(mode, "clears", nil), userId)
 	if err != nil {
 		return 0, err
@@ -75,7 +76,7 @@ func (service *RankingsService) Clears(userId int, mode int) (int64, error) {
 	return int64(math.Round(value)), nil
 }
 
-func (service *RankingsService) LeaderScores(userId int, mode int) (int64, error) {
+func (service *RankingsService) LeaderScores(userId int, mode constants.Mode) (int64, error) {
 	value, err := service.ScoreByKey(service.RankingKey(mode, "leader", nil), userId)
 	if err != nil {
 		return 0, err
@@ -91,7 +92,7 @@ func (service *RankingsService) Kudosu(userId int, country *string) (int64, erro
 	return int64(math.Round(value)), nil
 }
 
-func (service *RankingsService) PlayerCount(mode int, rankType string, country *string) (int64, error) {
+func (service *RankingsService) PlayerCount(mode constants.Mode, rankType string, country *string) (int64, error) {
 	if service == nil || service.client == nil {
 		return 0, ErrRedisClientNotInitialized
 	}
@@ -99,7 +100,7 @@ func (service *RankingsService) PlayerCount(mode int, rankType string, country *
 	return service.client.ZCount(service.ctx, key, "1", "+inf").Result()
 }
 
-func (service *RankingsService) TopPlayers(mode int, offset int64, count int64, rankType string, country *string) ([]*PlayerScore, error) {
+func (service *RankingsService) TopPlayers(mode constants.Mode, offset int64, count int64, rankType string, country *string) ([]*PlayerScore, error) {
 	if service == nil || service.client == nil {
 		return nil, ErrRedisClientNotInitialized
 	}

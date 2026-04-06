@@ -3,6 +3,7 @@ package rankings
 import (
 	"strconv"
 
+	"github.com/osuTitanic/titanic-go/internal/constants"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -21,50 +22,50 @@ func (service *RankingsService) RankByKey(key string, userId int) (int, error) {
 	return 0, err
 }
 
-func (service *RankingsService) GlobalRank(userId int, mode int) (int, error) {
+func (service *RankingsService) GlobalRank(userId int, mode constants.Mode) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "performance", nil), userId)
 }
 
-func (service *RankingsService) PPv1Rank(userId int, mode int) (int, error) {
+func (service *RankingsService) PPv1Rank(userId int, mode constants.Mode) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "ppv1", nil), userId)
 }
 
-func (service *RankingsService) CountryRank(userId int, mode int, country string) (int, error) {
+func (service *RankingsService) CountryRank(userId int, mode constants.Mode, country string) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "performance", &country), userId)
 }
 
-func (service *RankingsService) ScoreRank(userId int, mode int) (int, error) {
+func (service *RankingsService) ScoreRank(userId int, mode constants.Mode) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "rscore", nil), userId)
 }
 
-func (service *RankingsService) ClearsRank(userId int, mode int) (int, error) {
+func (service *RankingsService) ClearsRank(userId int, mode constants.Mode) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "clears", nil), userId)
 }
 
-func (service *RankingsService) TotalScoreRank(userId int, mode int) (int, error) {
+func (service *RankingsService) TotalScoreRank(userId int, mode constants.Mode) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "tscore", nil), userId)
 }
 
-func (service *RankingsService) LeaderScoresRank(userId int, mode int) (int, error) {
+func (service *RankingsService) LeaderScoresRank(userId int, mode constants.Mode) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "leader", nil), userId)
 }
 
-func (service *RankingsService) ScoreRankCountry(userId int, mode int, country string) (int, error) {
+func (service *RankingsService) ScoreRankCountry(userId int, mode constants.Mode, country string) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "rscore", &country), userId)
 }
 
-func (service *RankingsService) ClearsRankCountry(userId int, mode int, country string) (int, error) {
+func (service *RankingsService) ClearsRankCountry(userId int, mode constants.Mode, country string) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "clears", &country), userId)
 }
 
-func (service *RankingsService) PPv1CountryRank(userId int, mode int, country string) (int, error) {
+func (service *RankingsService) PPv1CountryRank(userId int, mode constants.Mode, country string) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "ppv1", &country), userId)
 }
 
-func (service *RankingsService) TotalScoreRankCountry(userId int, mode int, country string) (int, error) {
+func (service *RankingsService) TotalScoreRankCountry(userId int, mode constants.Mode, country string) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, "tscore", &country), userId)
 }
 
-func (service *RankingsService) Rank(userId int, mode int, rankType string, country *string) (int, error) {
+func (service *RankingsService) Rank(userId int, mode constants.Mode, rankType string, country *string) (int, error) {
 	return service.RankByKey(service.RankingKey(mode, rankType, country), userId)
 }

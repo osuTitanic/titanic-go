@@ -3,10 +3,11 @@ package rankings
 import (
 	"strconv"
 
+	"github.com/osuTitanic/titanic-go/internal/constants"
 	"github.com/redis/go-redis/v9"
 )
 
-func (service *RankingsService) PlayerAbove(userId int, mode int, rankType string) (scoreDifference int64, aboveUserId int, err error) {
+func (service *RankingsService) PlayerAbove(userId int, mode constants.Mode, rankType string) (scoreDifference int64, aboveUserId int, err error) {
 	if service == nil || service.client == nil {
 		return 0, 0, ErrRedisClientNotInitialized
 	}

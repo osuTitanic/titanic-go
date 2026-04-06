@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/osuTitanic/titanic-go/internal/constants"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -13,7 +14,7 @@ type RankingsService struct {
 	client *redis.Client
 }
 
-func (service *RankingsService) RankingKey(mode int, rankType string, country *string) string {
+func (service *RankingsService) RankingKey(mode constants.Mode, rankType string, country *string) string {
 	countrySuffix := ""
 	if country != nil {
 		countrySuffix = ":" + strings.ToLower(*country)

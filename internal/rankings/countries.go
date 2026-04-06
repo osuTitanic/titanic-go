@@ -17,7 +17,7 @@ type CountryRanking struct {
 	AveragePP        float64
 }
 
-func (service *RankingsService) TopCountries(mode int) ([]*CountryRanking, error) {
+func (service *RankingsService) TopCountries(mode constants.Mode) ([]*CountryRanking, error) {
 	if service == nil || service.client == nil {
 		return nil, ErrRedisClientNotInitialized
 	}
@@ -74,7 +74,7 @@ func (service *RankingsService) TopCountries(mode int) ([]*CountryRanking, error
 	return rankings, nil
 }
 
-func (service *RankingsService) countryLeaderboardScores(mode int, country string, rankType string) ([]redis.Z, error) {
+func (service *RankingsService) countryLeaderboardScores(mode constants.Mode, country string, rankType string) ([]redis.Z, error) {
 	key := service.RankingKey(mode, rankType, &country)
 	query := &redis.ZRangeBy{Max: "+inf", Min: "1"}
 	return service.client.ZRevRangeByScoreWithScores(service.ctx, key, query).Result()
