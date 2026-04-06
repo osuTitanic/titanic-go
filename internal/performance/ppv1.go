@@ -161,6 +161,9 @@ func (service *PPv1Service) RecalculateWeightFromScores(scores []*schemas.Score)
 		if score == nil {
 			continue
 		}
+		if !score.RequiresPPv1Update() {
+			continue
+		}
 
 		_, err := service.CalculatePerformance(score)
 		if err != nil {

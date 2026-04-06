@@ -64,6 +64,25 @@ func (score *Score) Relaxing() bool {
 	return score.Mods.Has(constants.Relax) || score.Mods.Has(constants.Autopilot)
 }
 
+func (score *Score) RequiresPPv1Update() bool {
+	if score.PPv1 <= 0 {
+		return true
+	}
+	timeSinceSubmission := time.Since(score.SubmittedAt)
+	// TODO: Add column that determines the last ppv1 update time
+	// 		 For now we'll use the submission time
+
+	// Every 10 days: the score loses ~1% of its pp
+	// Every 24 hours: the score loses ~0.1% of its pp
+	if score.StatusPP >= constants.ScoreStatusBest {
+		// For personal best's we want to update scores every 24 hours
+		return timeSinceSubmission > 24*time.Hour
+	} else {
+		// For everything else we can update it every 10 days
+		return timeSinceSubmission > 24*time.Hour*10
+	}
+}
+
 type RankHistory struct {
 	UserId      int            `gorm:"column:user_id;primaryKey"`
 	Time        time.Time      `gorm:"column:time;primaryKey;autoCreateTime"`
