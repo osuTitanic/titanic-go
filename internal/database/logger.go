@@ -38,9 +38,14 @@ func (l *GormLogger) Error(ctx context.Context, msg string, data ...any) {
 func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
 	elapsed := time.Since(begin)
 	sql, rows := fc()
-	if err != nil {
+	if err == nil {
+		l.logger.Debug("Trace", "elapsed", elapsed, "rows", rows, "sql", sql)
+		return
+	}
+
+	if err != gormLogger.ErrRecordNotFound {
 		l.logger.Error("Trace", "error", err, "elapsed", elapsed, "rows", rows, "sql", sql)
 	} else {
-		l.logger.Debug("Trace", "elapsed", elapsed, "rows", rows, "sql", sql)
+		l.logger.Debug("Trace", "error", err, "elapsed", elapsed, "rows", rows, "sql", sql)
 	}
 }
