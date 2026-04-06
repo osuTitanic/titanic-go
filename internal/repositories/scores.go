@@ -119,3 +119,30 @@ func (r *ScoreRepository) FetchScoreIndexByTscore(totalScore int64, beatmapId in
 	}
 	return rank + 1, nil
 }
+
+func (r *ScoreRepository) FetchBest(userId int, mode constants.Mode, excludeApproved bool, preload ...string) ([]*schemas.Score, error) {
+	allowedStatus := []constants.BeatmapStatus{
+		constants.BeatmapStatusRanked,
+		constants.BeatmapStatusApproved,
+	}
+
+	if !excludeApproved {
+		allowedStatus = append(allowedStatus,
+			constants.BeatmapStatusQualified,
+			constants.BeatmapStatusLoved,
+		)
+	}
+
+	var scores []*schemas.Score
+	err := Preloaded(r.db, preload).
+		Joins("JOIN beatmaps ON beatmaps.id = scores.beatmap_id").
+		Where("beatmaps.status IN ?", allowedStatus).
+		Where("scores.user_id = ?", userId).
+		Where("scores.mode = ?", mode).
+		Where("scores.status = ?", constants.ScoreStatusBest).
+		Where("scores.hidden = ?", false).
+		Order("scores.pp DESC").
+		Find(&scores).Error
+
+	return scores, err
+}
