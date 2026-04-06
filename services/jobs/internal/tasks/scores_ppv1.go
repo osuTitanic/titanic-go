@@ -83,12 +83,7 @@ func updatePPv1ForUser(app *state.State, logger *slog.Logger, user *schemas.User
 		)
 	}
 
-	ppValues := make([]float64, len(user.Stats))
-	for i, stats := range user.Stats {
-		ppValues[i] = stats.PPv1
-	}
-
-	logger.Info("Updated ppv1 for user", "name", user.Name, "id", user.Id, "ppv1", ppValues)
+	logger.Info("Updated ppv1 for user", "name", user.Name, "id", user.Id)
 	return nil
 }
 
