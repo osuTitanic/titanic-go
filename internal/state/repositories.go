@@ -23,6 +23,7 @@ type Repositories struct {
 	Achievements      *repositories.AchievementRepository
 	BeatmapFavourites *repositories.BeatmapFavouriteRepository
 	Histories         *repositories.HistoryRepository
+	Messages          *repositories.MessageRepository
 
 	// Beatmaps
 	Beatmaps    *repositories.BeatmapRepository
@@ -61,5 +62,6 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Topics:            repositories.NewTopicRepository(db),
 		Posts:             repositories.NewPostRepository(db),
 		Nominations:       repositories.NewNominationRepository(db),
+		Messages:          repositories.NewMessageRepository(db),
 	}
 }
