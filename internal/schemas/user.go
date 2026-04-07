@@ -250,14 +250,14 @@ func (GroupPermission) TableName() string {
 }
 
 type Notification struct {
-	Id      int64     `gorm:"column:id;primaryKey;autoIncrement"`
-	UserId  int       `gorm:"column:user_id;primaryKey"`
-	Type    int       `gorm:"column:type"`
-	Header  string    `gorm:"column:header"`
-	Content string    `gorm:"column:content"`
-	Link    string    `gorm:"column:link"`
-	Read    bool      `gorm:"column:read;default:false"`
-	Time    time.Time `gorm:"column:time;autoCreateTime"`
+	Id      int64                      `gorm:"column:id;primaryKey;autoIncrement"`
+	UserId  int                        `gorm:"column:user_id;primaryKey"`
+	Type    constants.NotificationType `gorm:"column:type"`
+	Header  string                     `gorm:"column:header"`
+	Content string                     `gorm:"column:content"`
+	Link    string                     `gorm:"column:link"`
+	Read    bool                       `gorm:"column:read;default:false"`
+	Time    time.Time                  `gorm:"column:time;autoCreateTime"`
 
 	User *User `gorm:"foreignKey:UserId;references:Id"`
 }
