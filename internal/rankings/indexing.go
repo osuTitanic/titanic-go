@@ -102,3 +102,56 @@ func (service *RankingsService) RemoveFromCountry(userId int, country string) er
 	_, err := pipe.Exec(service.ctx)
 	return err
 }
+
+// ScoresProvider prevents circular dependency between RankingsService and ScoresRepository
+type ScoresProvider interface {
+	FetchLeaderCount(userId int, mode constants.Mode) (int, error)
+}
+
+func (service *RankingsService) UpdateLeaderScores(stats *schemas.Stats, country string, scoreRepo ScoresProvider) error {
+	if service == nil || service.client == nil {
+		return ErrRedisClientNotInitialized
+	}
+	if stats == nil {
+		return ErrStatsIsNil
+	}
+
+	leaderCount, err := scoreRepo.FetchLeaderCount(stats.UserId, stats.Mode)
+	if err != nil {
+		return err
+	}
+
+	entry := redis.Z{Score: float64(leaderCount), Member: stats.UserId}
+	country = strings.ToLower(country)
+
+	pipe := service.client.Pipeline()
+	pipe.ZAdd(service.ctx, fmt.Sprintf("bancho:leader:%d", stats.Mode), entry)
+	pipe.ZAdd(service.ctx, fmt.Sprintf("bancho:leader:%d:%s", stats.Mode, country), entry)
+	_, err = pipe.Exec(service.ctx)
+	return err
+}
+
+// KudosuProvider prevents circular dependency between RankingsService and BeatmapModdingRepository
+type KudosuProvider interface {
+	TotalKudosuByUser(userId int) (int, error)
+}
+
+func (service *RankingsService) UpdateKudosu(userId int, country string, moddingRepo KudosuProvider) error {
+	if service == nil || service.client == nil {
+		return ErrRedisClientNotInitialized
+	}
+
+	kudosu, err := moddingRepo.TotalKudosuByUser(userId)
+	if err != nil {
+		return err
+	}
+
+	entry := redis.Z{Score: float64(kudosu), Member: userId}
+	country = strings.ToLower(country)
+
+	pipe := service.client.Pipeline()
+	pipe.ZAdd(service.ctx, "bancho:kudosu", entry)
+	pipe.ZAdd(service.ctx, fmt.Sprintf("bancho:kudosu:%s", country), entry)
+	_, err = pipe.Exec(service.ctx)
+	return err
+}
