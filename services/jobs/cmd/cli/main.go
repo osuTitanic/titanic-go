@@ -14,6 +14,7 @@ type TaskList map[string]func(*state.State, *slog.Logger) error
 
 var availableTasks = TaskList{
 	"stats_website":    tasks.UpdateWebsiteStats,
+	"stats_activity":   tasks.UpdateActivityStats,
 	"beatmap_statuses": tasks.UpdateBeatmapStatuses,
 	"ppv1_updates":     tasks.UpdatePPv1,
 }
