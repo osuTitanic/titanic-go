@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"time"
+
 	"github.com/osuTitanic/titanic-go/internal/schemas"
 	"gorm.io/gorm"
 )
@@ -19,6 +21,11 @@ func (r *BanchoActivityRepository) Create(activity *schemas.BanchoActivity) erro
 
 func (r *BanchoActivityRepository) Delete(activity *schemas.BanchoActivity) error {
 	return r.db.Delete(activity).Error
+}
+
+func (r *BanchoActivityRepository) DeleteOlderThan(cutoff time.Time) (int64, error) {
+	result := r.db.Where("time < ?", cutoff).Delete(&schemas.BanchoActivity{})
+	return result.RowsAffected, result.Error
 }
 
 func (r *BanchoActivityRepository) Update(updates *schemas.BanchoActivity, columns ...string) (int64, error) {
