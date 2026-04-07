@@ -142,3 +142,24 @@ func (r *ScoreRepository) FetchBest(userId int, mode constants.Mode, excludeAppr
 
 	return scores, err
 }
+
+func (r *ScoreRepository) FetchLeaderCount(userId int, mode constants.Mode) (int, error) {
+	leaderCountQuery := `
+		SELECT COUNT(*)
+		FROM (
+			SELECT
+				user_id,
+				RANK() OVER (PARTITION BY beatmap_id ORDER BY total_score DESC) AS rank
+			FROM scores
+			WHERE mode = ?
+				AND hidden = FALSE
+				AND status_score = ?
+		) AS ranked
+		WHERE ranked.user_id = ?
+			AND ranked.rank = 1
+	`
+
+	var count int
+	err := r.db.Raw(leaderCountQuery, mode, constants.ScoreStatusBest, userId).Scan(&count).Error
+	return count, err
+}
