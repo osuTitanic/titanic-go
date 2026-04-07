@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/osuTitanic/titanic-go/internal/constants"
 	"github.com/osuTitanic/titanic-go/internal/schemas"
 	"gorm.io/gorm"
 )
@@ -44,4 +45,12 @@ func (r *NotificationRepository) CountByUserId(userId int) (int, error) {
 	var count int64
 	err := r.db.Model(&schemas.Notification{}).Where("user_id = ?", userId).Count(&count).Error
 	return int(count), err
+}
+
+func (r *NotificationRepository) DeleteByType(userId int, notificationType constants.NotificationType) (int64, error) {
+	result := r.db.Where("user_id = ?", userId).
+		Where("type = ?", notificationType).
+		Where("read = ?", false).
+		Delete(&schemas.Notification{})
+	return result.RowsAffected, result.Error
 }
