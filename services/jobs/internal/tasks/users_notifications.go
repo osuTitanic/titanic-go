@@ -48,7 +48,10 @@ func UpdateUnreadDmNotifications(app *state.State, logger *slog.Logger) error {
 			return fmt.Errorf("failed to create chat notification for user %d: %w", user.Id, err)
 		}
 
-		logger.Info("Created unread chat notification", "user_id", user.Id, "username", user.Name)
+		logger.Info(
+			"Created unread chat notification",
+			"user_id", user.Id, "username", user.Name, "message", message,
+		)
 	}
 	return nil
 }
