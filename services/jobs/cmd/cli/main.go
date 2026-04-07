@@ -16,6 +16,8 @@ var availableTasks = TaskList{
 	"stats_website":       tasks.UpdateWebsiteStats,
 	"stats_activity":      tasks.UpdateActivityStats,
 	"users_notifications": tasks.UpdateUnreadDmNotifications,
+	"ranks_sync":          tasks.UpdateRanks,
+	"ranks_index":         tasks.IndexRanks,
 	"beatmap_statuses":    tasks.UpdateBeatmapStatuses,
 	"ppv1_updates":        tasks.UpdatePPv1,
 }
