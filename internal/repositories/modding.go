@@ -24,3 +24,12 @@ func (r *BeatmapModdingRepository) Delete(modding *schemas.BeatmapModding) error
 func (r *BeatmapModdingRepository) Update(updates *schemas.BeatmapModding, columns ...string) (int64, error) {
 	return CommonUpdate(r.db, updates, columns...)
 }
+
+func (r *BeatmapModdingRepository) TotalKudosuByUser(userId int) (int, error) {
+	var total int
+	err := r.db.Model(&schemas.BeatmapModding{}).
+		Select("COALESCE(SUM(amount), 0)").
+		Where("target_id = ?", userId).
+		Scan(&total).Error
+	return total, err
+}
