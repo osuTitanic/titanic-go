@@ -11,7 +11,12 @@
     },
     {
         "name": "ppv1_updates",
-        "interval": 5184000,
+        "interval": 86400,
         "interval_at": "09:00"
+    },
+    {
+        "name": "users_notifications",
+        "interval": 1200,
+        "interval_at": ""
     }
 ]
