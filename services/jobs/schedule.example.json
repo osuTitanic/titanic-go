@@ -3,5 +3,15 @@
         "name": "stats_website",
         "interval": 60,
         "interval_at": ""
+    },
+    {
+        "name": "stats_activity",
+        "interval": 60,
+        "interval_at": ""
+    },
+    {
+        "name": "ppv1_updates",
+        "interval": 5184000,
+        "interval_at": "09:00"
     }
 ]
