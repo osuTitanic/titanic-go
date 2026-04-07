@@ -149,8 +149,8 @@ func moveBeatmapTopic(app *state.State, beatmapset *schemas.Beatmapset, status c
 
 	topicUpdate := &schemas.ForumTopic{Id: *beatmapset.TopicId, ForumId: forumId}
 	postUpdate := &schemas.ForumPost{TopicId: *beatmapset.TopicId, ForumId: forumId}
-	app.Repositories.Topics.Update(topicUpdate, "forum_id")
-	app.Repositories.Posts.UpdateByTopic(postUpdate, "forum_id")
+	app.Repositories.ForumTopics.Update(topicUpdate, "forum_id")
+	app.Repositories.ForumPosts.UpdateByTopic(postUpdate, "forum_id")
 }
 
 func updateBeatmapIcon(app *state.State, beatmapset *schemas.Beatmapset, status constants.BeatmapStatus, previousStatus constants.BeatmapStatus) {
@@ -162,14 +162,14 @@ func updateBeatmapIcon(app *state.State, beatmapset *schemas.Beatmapset, status 
 	if status == constants.BeatmapStatusRanked || status == constants.BeatmapStatusQualified || status == constants.BeatmapStatusLoved {
 		// Set icon to heart for ranked, qualified & loved maps
 		topicUpdate.IconId = constants.ForumIconHeart.Pointer()
-		app.Repositories.Topics.Update(topicUpdate, "icon")
+		app.Repositories.ForumTopics.Update(topicUpdate, "icon")
 		return
 	}
 
 	if status == constants.BeatmapStatusApproved {
 		// Set icon to flame for approved maps
 		topicUpdate.IconId = constants.ForumIconFire.Pointer()
-		app.Repositories.Topics.Update(topicUpdate, "icon")
+		app.Repositories.ForumTopics.Update(topicUpdate, "icon")
 		return
 	}
 
@@ -183,23 +183,23 @@ func updateBeatmapIcon(app *state.State, beatmapset *schemas.Beatmapset, status 
 	if isRankedStatus(previousStatus) {
 		// Set icon to broken heart for maps that were approved but are no longer approved
 		topicUpdate.IconId = constants.ForumIconHeartPop.Pointer()
-		app.Repositories.Topics.Update(topicUpdate, "icon")
+		app.Repositories.ForumTopics.Update(topicUpdate, "icon")
 		return
 	}
 
 	if status == constants.BeatmapStatusGraveyard {
-		nominations, err := app.Repositories.Nominations.FetchByBeatmapset(beatmapset.Id)
+		nominations, err := app.Repositories.Nominations.FetchBySet(beatmapset.Id)
 		// Pop the bubble if the map was nominated but got graveyarded
 		if err == nil && len(nominations) > 0 {
 			topicUpdate.IconId = constants.ForumIconBubblePop.Pointer()
-			app.Repositories.Topics.Update(topicUpdate, "icon")
+			app.Repositories.ForumTopics.Update(topicUpdate, "icon")
 			return
 		}
 	}
 
 	// Remove icon for all other status changes
 	topicUpdate.IconId = nil
-	app.Repositories.Topics.Update(topicUpdate, "icon")
+	app.Repositories.ForumTopics.Update(topicUpdate, "icon")
 }
 
 func hideScoresForSet(app *state.State, beatmapset *schemas.Beatmapset) {

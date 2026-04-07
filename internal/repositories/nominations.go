@@ -5,27 +5,27 @@ import (
 	"gorm.io/gorm"
 )
 
-type NominationRepository struct {
+type BeatmapNominationRepository struct {
 	db *gorm.DB
 }
 
-func NewNominationRepository(db *gorm.DB) *NominationRepository {
-	return &NominationRepository{db: db}
+func NewNominationRepository(db *gorm.DB) *BeatmapNominationRepository {
+	return &BeatmapNominationRepository{db: db}
 }
 
-func (r *NominationRepository) Create(nomination *schemas.BeatmapNomination) error {
+func (r *BeatmapNominationRepository) Create(nomination *schemas.BeatmapNomination) error {
 	return r.db.Create(nomination).Error
 }
 
-func (r *NominationRepository) Delete(nomination *schemas.BeatmapNomination) error {
+func (r *BeatmapNominationRepository) Delete(nomination *schemas.BeatmapNomination) error {
 	return r.db.Delete(nomination).Error
 }
 
-func (r *NominationRepository) DeleteAll(setId int) error {
+func (r *BeatmapNominationRepository) DeleteAll(setId int) error {
 	return r.db.Where("set_id = ?", setId).Delete(&schemas.BeatmapNomination{}).Error
 }
 
-func (r *NominationRepository) FetchByBeatmapset(setId int, preload ...string) ([]*schemas.BeatmapNomination, error) {
+func (r *BeatmapNominationRepository) FetchBySet(setId int, preload ...string) ([]*schemas.BeatmapNomination, error) {
 	var nominations []*schemas.BeatmapNomination
 	err := Preloaded(r.db, preload).Where("set_id = ?", setId).Find(&nominations).Error
 	return nominations, err

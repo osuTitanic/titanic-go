@@ -45,33 +45,19 @@ func (r *GroupRepository) Many(includeHidden bool, preload ...string) ([]*schema
 	return groups, err
 }
 
-type GroupEntryRepository struct {
-	db *gorm.DB
-}
-
-func NewGroupEntryRepository(db *gorm.DB) *GroupEntryRepository {
-	return &GroupEntryRepository{db: db}
-}
-
-func (r *GroupEntryRepository) Create(entry *schemas.GroupEntry) error {
+func (r *GroupRepository) CreateEntry(entry *schemas.GroupEntry) error {
 	return r.db.Create(entry).Error
 }
 
-func (r *GroupEntryRepository) Update(updates *schemas.GroupEntry, columns ...string) (int64, error) {
-	var result *gorm.DB
-	if len(columns) == 0 {
-		result = r.db.Save(&updates)
-	} else {
-		result = r.db.Model(&updates).Select(columns).Updates(&updates)
-	}
-	return result.RowsAffected, result.Error
+func (r *GroupRepository) UpdateEntry(updates *schemas.GroupEntry, columns ...string) (int64, error) {
+	return CommonUpdate(r.db, updates, columns...)
 }
 
-func (r *GroupEntryRepository) Delete(entry *schemas.GroupEntry) error {
+func (r *GroupRepository) DeleteEntry(entry *schemas.GroupEntry) error {
 	return r.db.Delete(entry).Error
 }
 
-func (r *GroupEntryRepository) ByUserAndGroup(userId int, groupId int, preload ...string) (*schemas.GroupEntry, error) {
+func (r *GroupRepository) EntryByUserAndGroup(userId int, groupId int, preload ...string) (*schemas.GroupEntry, error) {
 	var entry schemas.GroupEntry
 	err := Preloaded(r.db, preload).Where("user_id = ? AND group_id = ?", userId, groupId).First(&entry).Error
 	if err != nil {
@@ -80,13 +66,13 @@ func (r *GroupEntryRepository) ByUserAndGroup(userId int, groupId int, preload .
 	return &entry, nil
 }
 
-func (r *GroupEntryRepository) ManyByUserId(userId int, preload ...string) ([]*schemas.GroupEntry, error) {
+func (r *GroupRepository) ManyEntriesByUserId(userId int, preload ...string) ([]*schemas.GroupEntry, error) {
 	var entries []*schemas.GroupEntry
 	err := Preloaded(r.db, preload).Where("user_id = ?", userId).Find(&entries).Error
 	return entries, err
 }
 
-func (r *GroupEntryRepository) ManyByGroupId(groupId int, preload ...string) ([]*schemas.GroupEntry, error) {
+func (r *GroupRepository) ManyEntriesByGroupId(groupId int, preload ...string) ([]*schemas.GroupEntry, error) {
 	var entries []*schemas.GroupEntry
 	err := Preloaded(r.db, preload).Where("group_id = ?", groupId).Find(&entries).Error
 	return entries, err
