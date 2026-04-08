@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"time"
 
 	"github.com/osuTitanic/titanic-go/internal/constants"
 	"github.com/osuTitanic/titanic-go/internal/schemas"
@@ -162,4 +163,14 @@ func (r *ScoreRepository) FetchLeaderCount(userId int, mode constants.Mode) (int
 	var count int
 	err := r.db.Raw(leaderCountQuery, mode, constants.ScoreStatusBest, userId).Scan(&count).Error
 	return count, err
+}
+
+func (r *ScoreRepository) FetchSubmittedTimestamps(userId int, mode constants.Mode) ([]time.Time, error) {
+	timestamps := make([]time.Time, 0)
+	err := r.db.Model(&schemas.Score{}).
+		Where("hidden = ?", false).
+		Where("user_id = ?", userId).
+		Where("mode = ?", mode).
+		Pluck("submitted_at", &timestamps).Error
+	return timestamps, err
 }
