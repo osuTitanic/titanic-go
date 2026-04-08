@@ -17,6 +17,23 @@ func NewHistoryRepository(db *gorm.DB) *HistoryRepository {
 	return &HistoryRepository{db: db}
 }
 
+func (r *HistoryRepository) CreateRankHistory(entry *schemas.RankHistory) error {
+	return r.db.Create(entry).Error
+}
+
+func (r *HistoryRepository) CreateReplayHistory(entry *schemas.ReplayHistory) error {
+	return r.db.Create(entry).Error
+}
+
+func (r *HistoryRepository) CreatePlayHistory(entry *schemas.PlayHistory) error {
+	return r.db.Create(entry).Error
+}
+
+func (r *HistoryRepository) DeletePlaysHistoryByUserMode(userId int, mode constants.Mode) (int64, error) {
+	result := r.db.Where("user_id = ? AND mode = ?", userId, mode).Delete(&schemas.PlayHistory{})
+	return result.RowsAffected, result.Error
+}
+
 func (r *HistoryRepository) UpdatePlays(userId int, mode constants.Mode) error {
 	now := time.Now()
 	year, month, _ := now.Date()
@@ -40,22 +57,6 @@ func (r *HistoryRepository) UpdatePlays(userId int, mode constants.Mode) error {
 		Plays:  1,
 	}
 	return r.db.Create(entry).Error
-}
-
-func (r *HistoryRepository) FetchPlaysHistory(userId int, mode constants.Mode, until time.Time) ([]*schemas.PlayHistory, error) {
-	var history []*schemas.PlayHistory
-	err := r.db.Where("user_id = ? AND mode = ? AND created_at >= ?", userId, mode, until).
-		Order("created_at DESC").
-		Find(&history).Error
-	return history, err
-}
-
-func (r *HistoryRepository) FetchPlaysHistoryAll(userId int, mode constants.Mode) ([]*schemas.PlayHistory, error) {
-	var history []*schemas.PlayHistory
-	err := r.db.Where("user_id = ? AND mode = ?", userId, mode).
-		Order("created_at DESC").
-		Find(&history).Error
-	return history, err
 }
 
 func (r *HistoryRepository) UpdateReplayViews(userId int, mode constants.Mode) error {
@@ -83,26 +84,6 @@ func (r *HistoryRepository) UpdateReplayViews(userId int, mode constants.Mode) e
 	return r.db.Create(entry).Error
 }
 
-func (r *HistoryRepository) FetchReplayHistory(userId int, mode constants.Mode, until time.Time) ([]*schemas.ReplayHistory, error) {
-	var history []*schemas.ReplayHistory
-	err := r.db.Where("user_id = ? AND mode = ? AND created_at >= ?", userId, mode, until).
-		Order("created_at DESC").
-		Find(&history).Error
-	return history, err
-}
-
-func (r *HistoryRepository) FetchReplayHistoryAll(userId int, mode constants.Mode) ([]*schemas.ReplayHistory, error) {
-	var history []*schemas.ReplayHistory
-	err := r.db.Where("user_id = ? AND mode = ?", userId, mode).
-		Order("created_at DESC").
-		Find(&history).Error
-	return history, err
-}
-
-func (r *HistoryRepository) AddRank(history *schemas.RankHistory) error {
-	return r.db.Create(history).Error
-}
-
 func (r *HistoryRepository) UpdateRank(stats *schemas.Stats, country string, rankingsService *rankings.RankingsService) error {
 	globalRank, _ := rankingsService.GlobalRank(stats.UserId, stats.Mode)
 	countryRank, _ := rankingsService.CountryRank(stats.UserId, stats.Mode, country)
@@ -126,6 +107,38 @@ func (r *HistoryRepository) UpdateRank(stats *schemas.Stats, country string, ran
 		Time:        time.Now(),
 	}
 	return r.db.Create(entry).Error
+}
+
+func (r *HistoryRepository) FetchPlaysHistory(userId int, mode constants.Mode, until time.Time) ([]*schemas.PlayHistory, error) {
+	var history []*schemas.PlayHistory
+	err := r.db.Where("user_id = ? AND mode = ? AND created_at >= ?", userId, mode, until).
+		Order("created_at DESC").
+		Find(&history).Error
+	return history, err
+}
+
+func (r *HistoryRepository) FetchPlaysHistoryAll(userId int, mode constants.Mode) ([]*schemas.PlayHistory, error) {
+	var history []*schemas.PlayHistory
+	err := r.db.Where("user_id = ? AND mode = ?", userId, mode).
+		Order("created_at DESC").
+		Find(&history).Error
+	return history, err
+}
+
+func (r *HistoryRepository) FetchReplayHistory(userId int, mode constants.Mode, until time.Time) ([]*schemas.ReplayHistory, error) {
+	var history []*schemas.ReplayHistory
+	err := r.db.Where("user_id = ? AND mode = ? AND created_at >= ?", userId, mode, until).
+		Order("created_at DESC").
+		Find(&history).Error
+	return history, err
+}
+
+func (r *HistoryRepository) FetchReplayHistoryAll(userId int, mode constants.Mode) ([]*schemas.ReplayHistory, error) {
+	var history []*schemas.ReplayHistory
+	err := r.db.Where("user_id = ? AND mode = ?", userId, mode).
+		Order("created_at DESC").
+		Find(&history).Error
+	return history, err
 }
 
 func (r *HistoryRepository) FetchRankHistory(userId int, mode constants.Mode, until time.Time) ([]*schemas.RankHistory, error) {
