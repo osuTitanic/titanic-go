@@ -18,5 +18,25 @@
         "name": "users_notifications",
         "interval": 1200,
         "interval_at": ""
+    },
+    {
+        "name": "users_historical",
+        "interval": 86400,
+        "interval_at": "10:00"
+    },
+    {
+        "name": "beatmap_statuses",
+        "interval": 3600,
+        "interval_at": ""
+    },
+    {
+        "name": "ranks_sync",
+        "interval": 3600,
+        "interval_at": ""
+    },
+    {
+        "name": "ranks_unlist",
+        "interval": 86400,
+        "interval_at": "11:00"
     }
 ]
