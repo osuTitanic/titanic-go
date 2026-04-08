@@ -16,6 +16,7 @@ var availableTasks = TaskList{
 	"stats_website":       tasks.UpdateWebsiteStats,
 	"stats_activity":      tasks.UpdateActivityStats,
 	"users_notifications": tasks.UpdateUnreadDmNotifications,
+	"users_historical":    tasks.FixHistoricalData,
 	"ranks_sync":          tasks.UpdateRanks,
 	"ranks_index":         tasks.IndexRanks,
 	"ranks_unlist":        tasks.UnlistUsers,
