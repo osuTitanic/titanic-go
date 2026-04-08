@@ -117,6 +117,10 @@ func (PlayHistory) TableName() string {
 	return "profile_play_history"
 }
 
+func (p *PlayHistory) Date() time.Time {
+	return time.Date(p.Year, time.Month(p.Month), 1, 0, 0, 0, 0, time.UTC)
+}
+
 type ReplayHistory struct {
 	UserId      int            `gorm:"column:user_id;primaryKey"`
 	Mode        constants.Mode `gorm:"column:mode;primaryKey"`
@@ -130,4 +134,8 @@ type ReplayHistory struct {
 
 func (ReplayHistory) TableName() string {
 	return "profile_replay_history"
+}
+
+func (r *ReplayHistory) Date() time.Time {
+	return time.Date(r.Year, time.Month(r.Month), 1, 0, 0, 0, 0, time.UTC)
 }
