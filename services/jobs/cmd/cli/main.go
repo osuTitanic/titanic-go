@@ -18,6 +18,7 @@ var availableTasks = TaskList{
 	"users_notifications": tasks.UpdateUnreadDmNotifications,
 	"ranks_sync":          tasks.UpdateRanks,
 	"ranks_index":         tasks.IndexRanks,
+	"ranks_unlist":        tasks.UnlistUsers,
 	"beatmap_statuses":    tasks.UpdateBeatmapStatuses,
 	"ppv1_updates":        tasks.UpdatePPv1,
 }

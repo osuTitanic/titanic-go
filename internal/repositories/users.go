@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"strings"
+	"time"
 
 	"github.com/osuTitanic/titanic-go/internal/schemas"
 	"gorm.io/gorm"
@@ -141,6 +142,15 @@ func (r *UserRepository) ManyByCreationDate(limit int, ascending bool, preload .
 
 	var users []*schemas.User
 	err := query.Find(&users).Error
+	return users, err
+}
+
+func (r *UserRepository) FetchInactiveOrRestricted(cutoff time.Time) ([]*schemas.User, error) {
+	var users []*schemas.User
+	err := r.db.Model(&schemas.User{}).
+		Where("(restricted = ? OR activated = ?) AND latest_activity > ?", true, false, cutoff).
+		Select("id, name, country").
+		Find(&users).Error
 	return users, err
 }
 
