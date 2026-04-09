@@ -118,14 +118,14 @@ func (ReleasesOfficialEntries) TableName() string {
 
 type ReleaseFiles struct {
 	Id          int       `gorm:"column:id;primaryKey;autoIncrement"`
-	Filename    string    `gorm:"column:filename"`
-	FileVersion int       `gorm:"column:file_version"`
-	FileHash    string    `gorm:"column:file_hash"`
-	Filesize    int       `gorm:"column:filesize"`
-	PatchId     *string   `gorm:"column:patch_id"`
-	UrlFull     string    `gorm:"column:url_full"`
-	UrlPatch    *string   `gorm:"column:url_patch"`
-	Timestamp   time.Time `gorm:"column:timestamp;autoCreateTime"`
+	Filename    string    `gorm:"column:filename" json:"filename"`
+	FileVersion int       `gorm:"column:file_version" json:"file_version,string"`
+	FileHash    string    `gorm:"column:file_hash" json:"file_hash"`
+	Filesize    int       `gorm:"column:filesize" json:"filesize,string"`
+	PatchId     *string   `gorm:"column:patch_id" json:"patch_id,omitempty"`
+	UrlFull     string    `gorm:"column:url_full" json:"url_full"`
+	UrlPatch    *string   `gorm:"column:url_patch" json:"url_patch,omitempty"`
+	Timestamp   Timestamp `gorm:"column:timestamp;autoCreateTime" json:"timestamp"`
 
 	OfficialReleases []*ReleasesOfficial `gorm:"many2many:releases_official_entries;foreignKey:Id;joinForeignKey:FileId;References:Id;joinReferences:ReleaseId"`
 }
