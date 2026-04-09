@@ -133,6 +133,22 @@ func (r *ReleasesOfficialRepository) UpdateFile(updates *schemas.ReleaseFiles, c
 	return CommonUpdate(r.db, updates, columns...)
 }
 
+func (r *ReleasesOfficialRepository) FetchFileById(id int) (*schemas.ReleaseFiles, error) {
+	var file schemas.ReleaseFiles
+	if err := r.db.Where("id = ?", id).First(&file).Error; err != nil {
+		return nil, err
+	}
+	return &file, nil
+}
+
+func (r *ReleasesOfficialRepository) FetchFileByVersion(version int) (*schemas.ReleaseFiles, error) {
+	var file schemas.ReleaseFiles
+	if err := r.db.Where("file_version = ?", version).First(&file).Error; err != nil {
+		return nil, err
+	}
+	return &file, nil
+}
+
 func (r *ReleasesOfficialRepository) CreateChangelog(changelog *schemas.ReleaseChangelog) error {
 	return r.db.Create(changelog).Error
 }
