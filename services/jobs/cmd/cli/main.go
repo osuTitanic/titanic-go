@@ -22,6 +22,7 @@ var availableTasks = TaskList{
 	"ranks_unlist":        tasks.UnlistUsers,
 	"beatmap_statuses":    tasks.UpdateBeatmapStatuses,
 	"ppv1_updates":        tasks.UpdatePPv1,
+	"release_updates":     tasks.ReleaseUpdates,
 }
 
 func (t *TaskList) List() {
