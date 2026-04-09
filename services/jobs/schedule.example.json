@@ -38,5 +38,10 @@
         "name": "ranks_unlist",
         "interval": 86400,
         "interval_at": "11:00"
+    },
+    {
+        "name": "release_updates",
+        "interval": 900,
+        "interval_at": ""
     }
 ]
