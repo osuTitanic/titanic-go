@@ -144,6 +144,11 @@ type Config struct {
 	ChatChannelId       int64       `env:"CHAT_CHANNEL_ID"`
 	ChatWebhookChannels StringSlice `env:"CHAT_WEBHOOK_CHANNELS" envDefault:"#osu"`
 
+	// Release stream updates (optional)
+	ReleaseUpdatesEnabled      bool   `env:"RELEASE_UPDATES_ENABLED" envDefault:"false"`
+	ReleaseUpdateS3Target      string `env:"RELEASE_UPDATE_S3_TARGET"`
+	ReleaseUpdateNotifyWebhook string `env:"RELEASE_UPDATE_NOTIFY_WEBHOOK"`
+
 	// Debugging options
 	Debug  bool `env:"DEBUG" envDefault:"false"`
 	Reload bool `env:"RELOAD" envDefault:"false"`
