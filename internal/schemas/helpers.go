@@ -70,3 +70,7 @@ func (t *Timestamp) Scan(value any) error {
 		return fmt.Errorf("cannot scan type %T into Timestamp", value)
 	}
 }
+
+func ResolveSafeName(name string) string {
+	return strings.ToLower(strings.ReplaceAll(name, " ", "_"))
+}
