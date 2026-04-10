@@ -52,3 +52,8 @@ func (r *VerificationRepository) ManyByUserId(userId int, preload ...string) ([]
 func (r *VerificationRepository) DeleteByToken(token string) error {
 	return r.db.Where("token = ?", token).Delete(&schemas.Verification{}).Error
 }
+
+func (r *VerificationRepository) DeleteByUserId(userId int) (int64, error) {
+	result := r.db.Where("user_id = ?", userId).Delete(&schemas.Verification{})
+	return result.RowsAffected, result.Error
+}
