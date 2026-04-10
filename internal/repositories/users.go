@@ -145,6 +145,19 @@ func (r *UserRepository) ManyByCreationDate(limit int, ascending bool, preload .
 	return users, err
 }
 
+func (r *UserRepository) ManyAutoDeleteCandidates(cutoff time.Time, preload ...string) ([]*schemas.User, error) {
+	var users []*schemas.User
+	query := Preloaded(r.db, preload).Model(&schemas.User{}).
+		Joins("LEFT JOIN stats ON stats.id = users.id").
+		Where("users.activated = ?", false).
+		Where("users.created_at < ?", cutoff).
+		Where("stats.id IS NULL").
+		Where("users.name NOT LIKE ?", "DeletedUser%")
+
+	err := query.Find(&users).Error
+	return users, err
+}
+
 func (r *UserRepository) FetchInactiveOrRestricted(cutoff time.Time) ([]*schemas.User, error) {
 	var users []*schemas.User
 	err := r.db.Model(&schemas.User{}).
