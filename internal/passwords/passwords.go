@@ -25,16 +25,16 @@ func CreatePasswordHashFromMd5(md5 string) (string, error) {
 }
 
 func VerifyPasswordHashFromMd5(md5 string, hash string) bool {
-	if cached, exists := passwordCache[hash]; exists {
+	if cached, exists := passwordCache[md5]; exists {
 		return cached
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(md5))
 	if err != nil {
-		passwordCache[hash] = false
+		passwordCache[md5] = false
 		return false
 	}
 
-	passwordCache[hash] = true
+	passwordCache[md5] = true
 	return true
 }
