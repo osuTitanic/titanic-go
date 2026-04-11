@@ -2,6 +2,7 @@
     "services": [
         {
             "name": "jobs",
+            "description": "A collection of background-tasks for titanic",
             "go_build_path": "./services/jobs/cmd/cli",
             "dockerfile": "./services/jobs/Dockerfile",
             "docker_context": ".",

@@ -72,6 +72,7 @@ jobs:
                       dockerfile: .dockerfile,
                       docker_context: .docker_context,
                       image: .image,
+                      description: .description,
                       platforms: (.platforms | join(","))
                     }
                 ]
@@ -158,6 +159,8 @@ jobs:
             type=raw,value=main
             type=raw,value=latest
             type=sha,format=short,prefix=sha-
+          labels: |
+            org.opencontainers.image.description=${{ matrix.description }}
 
       - name: Build and publish image
         uses: docker/build-push-action@v6
