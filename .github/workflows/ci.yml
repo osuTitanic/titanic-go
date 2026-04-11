@@ -160,6 +160,7 @@ jobs:
             type=raw,value=latest
             type=sha,format=short,prefix=sha-
           labels: |
+            org.opencontainers.image.title=${{ matrix.service }}
             org.opencontainers.image.description=${{ matrix.description }}
 
       - name: Build and publish image
