@@ -1,0 +1,11 @@
+.git
+.github
+.data
+.env
+.example.env
+bin
+dist
+tmp
+cli
+coverage.out
+*.test
