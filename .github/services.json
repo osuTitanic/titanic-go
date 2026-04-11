@@ -1,0 +1,12 @@
+{
+    "services": [
+        {
+            "name": "jobs",
+            "go_build_path": "./services/jobs/cmd/cli",
+            "dockerfile": "./services/jobs/Dockerfile",
+            "docker_context": ".",
+            "image": "ghcr.io/osutitanic/jobs",
+            "platforms": ["linux/amd64", "linux/arm64", "linux/arm/v7"]
+        }
+    ]
+}
