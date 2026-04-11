@@ -125,3 +125,6 @@ tmp/
 # Application data
 .data
 .env
+
+# Python references
+references/
