@@ -41,7 +41,7 @@ func (schedule scheduleAt) reset(t time.Time) time.Time {
 
 func (schedule scheduleAt) Next(t time.Time) time.Time {
 	next := schedule.reset(t)
-	if t.After(next) {
+	if !t.Before(next) {
 		return next.Add(schedule.period)
 	}
 	return next
