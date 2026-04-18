@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/osuTitanic/titanic-go/internal/state"
 )
 
@@ -16,8 +15,13 @@ type Server struct {
 	Port   int
 	Name   string
 	State  *state.State
-	Router *mux.Router
+	Router *http.ServeMux
 	Logger *slog.Logger
+}
+
+// Handle registers a stdlib route pattern on the server.
+func (server *Server) Handle(pattern string, handler func(*Context)) {
+	server.Router.HandleFunc(pattern, server.ContextMiddleware(handler))
 }
 
 func NewServer(host string, port int, name string, state *state.State) *Server {
@@ -27,7 +31,7 @@ func NewServer(host string, port int, name string, state *state.State) *Server {
 		Name:   name,
 		State:  state,
 		Logger: slog.Default().With("component", name),
-		Router: mux.NewRouter(),
+		Router: http.NewServeMux(),
 	}
 }
 
@@ -36,11 +40,16 @@ type Context struct {
 	Response http.ResponseWriter
 	Request  *http.Request
 	State    *state.State
-	Vars     map[string]string
 }
 
 func (ctx *Context) IP() string {
 	return GetRequestIP(ctx.Request)
+}
+
+// PathValue is a helper function to get path variables from the request context.
+// e.g. if the route is "/users/{id}", you can get the "id" variable by calling ctx.PathValue("id").
+func (ctx *Context) PathValue(name string) string {
+	return ctx.Request.PathValue(name)
 }
 
 // Serve starts the HTTP server and listens for incoming requests.
@@ -97,7 +106,6 @@ func (server *Server) ContextMiddleware(handler func(*Context)) http.HandlerFunc
 			Response: w,
 			Request:  r,
 			State:    server.State,
-			Vars:     mux.Vars(r),
 		}
 
 		w.Header().Set("Server", server.Name)
@@ -111,13 +119,12 @@ func (server *Server) LoggingMiddleware(next http.Handler) http.Handler {
 		rc := &ResponseContext{w: w}
 		start := time.Now()
 		next.ServeHTTP(rc, r)
-		time := time.Since(start)
 
 		server.Logger.Info(
 			fmt.Sprintf("%s %s", r.Method, r.RequestURI),
 			"ip", GetRequestIP(r),
 			"status", rc.Status(),
-			"duration", time.String(),
+			"duration", time.Since(start).String(),
 		)
 	})
 }
