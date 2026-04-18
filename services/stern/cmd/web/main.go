@@ -12,7 +12,8 @@ import (
 )
 
 func InitializeWebRoutes(server *server.Server) {
-	server.Handle("GET /", routes.Home)
+	server.Handle("GET /{$}", routes.Home)
+	server.Handle("GET /", routes.NotFound)
 }
 
 func InitializeStaticRoutes(server *server.Server) {

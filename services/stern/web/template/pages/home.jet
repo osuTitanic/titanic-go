@@ -1,8 +1,14 @@
-{{extends "/layout.jet"}}
+{{ extends "/layout.jet" }}
 
-{{block documentBody()}}
-  <main>
-    <h1>{{ .Heading }}</h1>
-    <p>{{ .Message }}</p>
-  </main>
-{{end}}
+{{ block head() }}
+<title>Titanic! - Reviving old osu!</title>
+<meta property="og:title" content="Titanic! - Reviving old osu!">
+<meta property="og:image" content="/images/logo/main-low.png">
+<meta property="og:url" content="{{ .Config.OsuBaseUrl() }}">
+<meta property="og:description" content="Relive the early days of osu! with Titanic.">
+<link rel="stylesheet" href="/css/home.css">
+{{ end }}
+
+{{ block content() }}
+  yeah
+{{ end }}

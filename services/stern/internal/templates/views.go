@@ -1,11 +1,19 @@
 package templates
 
-type LayoutData struct {
-	Title string
+import "github.com/osuTitanic/titanic-go/internal/config"
+
+type Statistics struct {
+	TotalUsers  int
+	OnlineUsers int
+	TotalScores int
+}
+
+type DefaultView struct {
+	Stats  Statistics
+	Config *config.Config
 }
 
 type HomeView struct {
-	Layout  LayoutData
-	Heading string
-	Message string
+	DefaultView
+	// TODO: Add news, chat, most played maps, ...
 }

@@ -1,11 +1,195 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ .Layout.Title }}</title>
-  </head>
-  <body>
-    {{block documentBody()}}{{end}}
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, user-scalable=yes">
+    <meta name="msapplication-TileColor" content="#603cba">
+    <meta name="theme-color" content="rgba(96, 60, 186, 1)">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="/images/logo/icon-192.png">
+    <!-- TODO: add manifest -->
+
+    <!-- TODO: add API url dns-prefetch/preconnect tags -->
+    <link rel="dns-prefetch" href="https://cdn.socket.io">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+    <link rel="stylesheet" href="/css/main.css">
+    <meta property="og:site_name" content="Titanic!">
+    <meta property="og:type" content="website">
+    {{ yield head() }}
+
+    <link rel="preload" href="/images/logo/main-vector.min.svg" as="image" fetchpriority="high">
+    <link rel="stylesheet" href="/lib/font-awesome.min.css">
+    <script>
+        var apiBaseurl = "{{ .Config.ApiBaseUrl() }}";
+        var osuBaseurl = "{{ .Config.OsuBaseUrl() }}";
+        var staticBaseurl = "{{ .Config.StaticBaseUrl() }}";
+        var approvedRewards = {{ .Config.ApprovedMapRewards }};
+        var currentUser = null; // TODO: add the authenticated user ID
+        var currentUsername = ""; // TODO: add the authenticated username
+        var csrfToken = ""; // TODO: add CSRF tokens
+    </script>
+    <script src="/lib/instant.page.js" type="module" defer></script>
+    <!-- TODO: add modern-browser-only assets -->
+    <!-- CSS fixes for Internet Explorer -->
+    <!--[if IE 6]>
+    <style>
+        .nav-element a,
+        .nav-element a:visited {
+            width: 35px;
+        }
+        .nav-list {
+            margin-left: 85px;
+        }
+        .bancho-stats {
+            width: 220px;
+            top: -17px;
+            right: -1px;
+        }
+    </style>
+    <![endif]-->
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="/lib/font-awesome-ie7.min.css">
+    <![endif]-->
+</head>
+<body id="titanic">
+    <!-- TODO: add the restricted account banner -->
+    <!-- TODO: add the seasonal snow canvas -->
+    <div class="main">
+        <a href="/" aria-label="Home">
+            <img src="/images/logo/main-vector.min.svg" loading="eager" fetchpriority="high" class="logo" width="140" height="140" alt="">
+            <!-- TODO: add IE-specific raster logo fallback -->
+        </a>
+        <div class="nav">
+            <!-- TODO: extract this navigation into partial -->
+            <ul class="nav-list">
+                <li class="nav-element">
+                    <a href="/">Home</a>
+                </li>
+                <li class="nav-element">
+                    <a href="/download/">Download</a>
+                </li>
+                <li class="nav-element nav-element-dropdown">
+                    <a href="/beatmapsets/">
+                        Beatmaps
+                        <img class="dropdown-indicator" src="/images/arrow-white-highlight.png" alt="»">
+                    </a>
+                    <ul class="nav-dropdown">
+                        <li>
+                            <a href="/beatmapsets/?category=2" data-instant>Ranked</a>
+                            <a href="/beatmapsets/?category=5" data-instant>Approved</a>
+                            <a href="/beatmapsets/?category=4" data-instant>Loved</a>
+                            <a href="/beatmapsets/packs/">Beatmap Packs</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-element nav-element-dropdown">
+                    <!-- TODO: use user preferred mode in rankings path -->
+                    <a href="/rankings/osu/performance">
+                        Rankings
+                        <img class="dropdown-indicator" src="/images/arrow-white-highlight.png" alt="»">
+                    </a>
+                    <ul class="nav-dropdown">
+                        <li>
+                            <a href="/rankings/osu/performance">Performance</a>
+                            <a href="/rankings/osu/country">Countries</a>
+                            <a href="/rankings/osu/rscore">Ranked Score</a>
+                            <a href="/rankings/osu/tscore">Total Score</a>
+                            <a href="/rankings/osu/ppv1">PPv1</a>
+                            <a href="/rankings/osu/clears">Clears</a>
+                            <a href="/rankings/osu/leader">First Places</a>
+                            <a href="/rankings/kudosu">Kudosu</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-element nav-element-dropdown">
+                    <a href="/forum/">
+                        Community
+                        <img class="dropdown-indicator" src="/images/arrow-white-highlight.png" alt="»">
+                    </a>
+                    <ul class="nav-dropdown">
+                        <li>
+                            <a href="/forum/">Forums</a>
+                            <a href="/account/chat">Chat</a>
+                            <a href="https://discord.gg/qupv72e7YH">Discord</a>
+                            <a href="/wiki/">Wiki</a>
+                            <a href="/wiki/en/Rules">Rules</a>
+                            <a href="/events">Activity Feed</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="bancho-stats">
+            <b>{{ .Stats.TotalUsers }}</b> users, <b>{{ .Stats.OnlineUsers }}</b> online now.<br>
+            A total of <b>{{ .Stats.TotalScores }}</b> plays!
+        </div>
+        <div class="content">
+            <div class="top">
+                <div class="search-container">
+                    <form class="search-form" onsubmit="return userSearch()">
+                        <input class="nav-search" type="text" id="user-search" name="users" placeholder="User" autocomplete="off">
+                    </form>
+                    <form class="search-form" onsubmit="return beatmapSearch()">
+                        <input class="nav-search" type="text" id="beatmap-search" name="beatmaps" placeholder="Beatmap" autocomplete="off">
+                    </form>
+                </div>
+                <div class="login-container">
+                    <!-- TODO: add authentication logic -->
+                    <span class="nav-login" id="welcome-text">Welcome, guest!</span>
+                    <a onclick="showLoginForm()" class="nav-login" id="login-text">
+                        <i class="icon-caret-down"></i>
+                        Login
+                    </a>
+                    <a href="/account/register" class="nav-login" id="register-text">
+                        <i class="icon-magic"></i>
+                        I'm new!
+                    </a>
+                </div>
+            </div>
+            <div class="login-dropdown" style="display: none;">
+                <form action="/account/login" method="post">
+                    <input type="hidden" name="redirect" value="/">
+                    <!-- TODO: populate the login redirect target -->
+                    Please enter your credentials:
+                    <br>
+                    <input id="username-field" class="post" type="text" name="username" placeholder="Username" maxlength="30" value="" tabindex="0" autocomplete="off">
+                    <br>
+                    <input id="password-field" class="post" type="password" name="password" placeholder="Password" tabindex="0" autocomplete="off">
+                    <br>
+                    <div>
+                        <input id="remember" class="radio" type="checkbox" name="remember"><label for="remember">Remember Me</label>
+                        <input class="login-button" type="submit" name="login" value="Login" tabindex="5">
+                    </div>
+                    <div class="login-bottom-text">
+                        <a id="forgot-password-text" href="/account/reset">
+                            Forgot your password?
+                        </a>
+                    </div>
+                    <div class="login-bottom-text">
+                        <a id="register-text" href="/account/register">
+                            Create new account!
+                        </a>
+                    </div>
+                    <input type="hidden" name="csrf_token" value="">
+                    <!-- TODO: add a real CSRF tokens -->
+                </form>
+            </div>
+            <!-- TODO: add IE-only scripts -->
+            <script src="/lib/jquery.min.js"></script>
+            <script src="/lib/jquery.migrate.min.js" defer></script>
+            <script src="/lib/jquery.timeago.js" defer></script>
+            <script src="/lib/jquery.marquee.js" defer></script>
+            <script src="/js/main.js" fetchpriority="high"></script>
+            <div class="page">
+                {{ yield content() }}
+                <div style="clear: both;"></div>
+            </div>
+            <div class="gradient"></div>
+            <script src="/js/editor.js" fetchpriority="low" defer></script>
+            <!-- TODO: add the seasonal snow script -->
+        </div>
+    </div>
+</body>
 </html>

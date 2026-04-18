@@ -9,9 +9,8 @@ import (
 
 func Home(ctx *server.Context) {
 	view := templates.HomeView{
-		Layout:  BuildLayoutData("Titanic!"),
-		Heading: "Welcome to Titanic!",
-		Message: "stuff goes here",
+		DefaultView: BuildDefaultView(ctx.State.Config),
+		// TODO: Add more data
 	}
 	ctx.RenderTemplate(http.StatusOK, "pages/home", view)
 }
