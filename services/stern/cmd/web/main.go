@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/osuTitanic/titanic-go/internal/state"
+	"github.com/osuTitanic/titanic-go/services/stern/internal/routes"
 	"github.com/osuTitanic/titanic-go/services/stern/internal/server"
 )
 
@@ -17,5 +18,6 @@ func main() {
 	defer app.Close()
 
 	server := server.NewServer(app.Config.FrontendHost, app.Config.FrontendPort, "stern", app)
+	server.Handle("GET /", routes.Home)
 	server.Serve()
 }
