@@ -1,4 +1,10 @@
-package stern
+//go:build static_embedded
+
+// NOTE: By default the "static" folder is not being embedded into the binary.
+//       If you want to embed the static assets, build with the "static_embedded" tag:
+//       go build -tags static_embedded
+
+package web
 
 import (
 	"embed"
@@ -6,9 +12,6 @@ import (
 	"path"
 	"strings"
 )
-
-//go:embed template
-var Templates embed.FS
 
 //go:embed static
 var Static embed.FS
