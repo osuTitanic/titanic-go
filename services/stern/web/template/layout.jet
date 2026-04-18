@@ -183,7 +183,7 @@
             <script src="/lib/jquery.marquee.js" defer></script>
             <script src="/js/main.js" fetchpriority="high"></script>
             <div class="page">
-                {{ yield content() }}
+                {{ yield body() }}
                 <div style="clear: both;"></div>
             </div>
             <div class="gradient"></div>

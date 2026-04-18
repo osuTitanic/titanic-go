@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="/css/error.css">
 {{ end }}
 
-{{ block content() }}
+{{ block body() }}
 <img src="/images/art/ffffff.png" alt="Error Image">
 <div class="description">
     <h1>We could not find what your are looking for...</h1>

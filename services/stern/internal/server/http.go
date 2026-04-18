@@ -78,14 +78,14 @@ func (ctx *Context) RenderTemplate(status int, name string, data any) error {
 	if ctx.Templates == nil {
 		err := errors.New("templates engine is not configured")
 		ctx.Logger.Error("Failed to render template", "template", name, "error", err)
-		http.Error(ctx.Response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		templates.InternalServerErrorFallback(ctx.Response)
 		return err
 	}
 
 	body, err := ctx.Templates.Render(name, data)
 	if err != nil {
 		ctx.Logger.Error("Failed to render template", "template", name, "error", err)
-		http.Error(ctx.Response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		templates.InternalServerErrorFallback(ctx.Response)
 		return err
 	}
 

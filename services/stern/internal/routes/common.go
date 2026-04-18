@@ -15,6 +15,27 @@ func NotFound(ctx *server.Context) {
 	)
 }
 
+func InternalServerError(ctx *server.Context) {
+	if ctx.Templates == nil {
+		ctx.Logger.Error("Failed to render template", "template", "errors/500", "error", "templates engine is not configured")
+		templates.InternalServerErrorFallback(ctx.Response)
+		return
+	}
+
+	body, err := ctx.Templates.Render("errors/500", BuildDefaultView(ctx.State.Config))
+	if err != nil {
+		ctx.Logger.Error("Failed to render template", "template", "errors/500", "error", err)
+		templates.InternalServerErrorFallback(ctx.Response)
+		return
+	}
+
+	ctx.Response.Header().Set("Content-Type", "text/html; charset=utf-8")
+	ctx.Response.WriteHeader(http.StatusInternalServerError)
+	if _, err := ctx.Response.Write(body); err != nil {
+		ctx.Logger.Error("Failed to write response body", "template", "errors/500", "error", err)
+	}
+}
+
 func BuildDefaultView(cfg *config.Config) templates.DefaultView {
 	return templates.DefaultView{
 		Stats:  BuildStatistics(),
