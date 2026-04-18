@@ -1,0 +1,8 @@
+{{extends "/layout.jet"}}
+
+{{block documentBody()}}
+  <main>
+    <h1>{{ .Heading }}</h1>
+    <p>{{ .Message }}</p>
+  </main>
+{{end}}

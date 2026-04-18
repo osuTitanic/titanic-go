@@ -1,8 +1,17 @@
 package routes
 
-import "github.com/osuTitanic/titanic-go/services/stern/internal/server"
+import (
+	"net/http"
+
+	"github.com/osuTitanic/titanic-go/services/stern/internal/server"
+	"github.com/osuTitanic/titanic-go/services/stern/internal/templates"
+)
 
 func Home(ctx *server.Context) {
-	ctx.Response.WriteHeader(200)
-	ctx.Response.Write([]byte("yeah"))
+	view := templates.HomeView{
+		Layout:  BuildLayoutData("Titanic!"),
+		Heading: "Welcome to Titanic!",
+		Message: "stuff goes here",
+	}
+	ctx.RenderTemplate(http.StatusOK, "pages/home", view)
 }

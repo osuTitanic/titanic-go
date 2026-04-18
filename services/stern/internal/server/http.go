@@ -1,22 +1,25 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/osuTitanic/titanic-go/internal/state"
+	"github.com/osuTitanic/titanic-go/services/stern/internal/templates"
 )
 
 // Server is the main struct that holds the state for an http server.
 type Server struct {
-	Host   string
-	Port   int
-	Name   string
-	State  *state.State
-	Router *http.ServeMux
-	Logger *slog.Logger
+	Host      string
+	Port      int
+	Name      string
+	State     *state.State
+	Logger    *slog.Logger
+	Router    *http.ServeMux
+	Templates *templates.Engine
 }
 
 // Handle registers a stdlib route pattern on the server.
@@ -24,22 +27,25 @@ func (server *Server) Handle(pattern string, handler func(*Context)) {
 	server.Router.HandleFunc(pattern, server.ContextMiddleware(handler))
 }
 
-func NewServer(host string, port int, name string, state *state.State) *Server {
+func NewServer(host string, port int, name string, state *state.State, engine *templates.Engine) *Server {
 	return &Server{
-		Host:   host,
-		Port:   port,
-		Name:   name,
-		State:  state,
-		Logger: slog.Default().With("component", name),
-		Router: http.NewServeMux(),
+		Host:      host,
+		Port:      port,
+		Name:      name,
+		State:     state,
+		Templates: engine,
+		Logger:    slog.Default().With("component", name),
+		Router:    http.NewServeMux(),
 	}
 }
 
 // Context is a struct that holds the request context for each endpoint call.
 type Context struct {
-	Response http.ResponseWriter
-	Request  *http.Request
-	State    *state.State
+	Response  http.ResponseWriter
+	Request   *http.Request
+	State     *state.State
+	Templates *templates.Engine
+	Logger    *slog.Logger
 }
 
 func (ctx *Context) IP() string {
@@ -50,6 +56,27 @@ func (ctx *Context) IP() string {
 // e.g. if the route is "/users/{id}", you can get the "id" variable by calling ctx.PathValue("id").
 func (ctx *Context) PathValue(name string) string {
 	return ctx.Request.PathValue(name)
+}
+
+func (ctx *Context) RenderTemplate(status int, name string, data any) error {
+	if ctx.Templates == nil {
+		err := errors.New("templates engine is not configured")
+		ctx.Logger.Error("Failed to render template", "template", name, "error", err)
+		http.Error(ctx.Response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return err
+	}
+
+	body, err := ctx.Templates.Render(name, data)
+	if err != nil {
+		ctx.Logger.Error("Failed to render template", "template", name, "error", err)
+		http.Error(ctx.Response, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return err
+	}
+
+	ctx.Response.Header().Set("Content-Type", "text/html; charset=utf-8")
+	ctx.Response.WriteHeader(status)
+	_, err = ctx.Response.Write(body)
+	return err
 }
 
 // Serve starts the HTTP server and listens for incoming requests.
@@ -103,9 +130,11 @@ func (rc *ResponseContext) Status() int {
 func (server *Server) ContextMiddleware(handler func(*Context)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		context := &Context{
-			Response: w,
-			Request:  r,
-			State:    server.State,
+			Response:  w,
+			Request:   r,
+			State:     server.State,
+			Templates: server.Templates,
+			Logger:    server.Logger,
 		}
 
 		w.Header().Set("Server", server.Name)

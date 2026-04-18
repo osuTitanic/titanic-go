@@ -7,6 +7,7 @@ import (
 	"github.com/osuTitanic/titanic-go/internal/state"
 	"github.com/osuTitanic/titanic-go/services/stern/internal/routes"
 	"github.com/osuTitanic/titanic-go/services/stern/internal/server"
+	"github.com/osuTitanic/titanic-go/services/stern/internal/templates"
 )
 
 func main() {
@@ -17,7 +18,13 @@ func main() {
 	}
 	defer app.Close()
 
-	server := server.NewServer(app.Config.FrontendHost, app.Config.FrontendPort, "stern", app)
+	engine, err := templates.NewEngine(app.Config)
+	if err != nil {
+		slog.Error("Failed to initialize templates", "error", err)
+		os.Exit(1)
+	}
+
+	server := server.NewServer(app.Config.FrontendHost, app.Config.FrontendPort, "stern", app, engine)
 	server.Handle("GET /", routes.Home)
 	server.Serve()
 }
