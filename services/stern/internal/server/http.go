@@ -3,8 +3,11 @@ package server
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"net/http"
+	"path"
+	"strings"
 	"time"
 
 	"github.com/osuTitanic/titanic-go/internal/state"
@@ -25,6 +28,19 @@ type Server struct {
 // Handle registers a stdlib route pattern on the server.
 func (server *Server) Handle(pattern string, handler func(*Context)) {
 	server.Router.HandleFunc(pattern, server.ContextMiddleware(handler))
+}
+
+// HandleFileSystem registers a static file handler under the provided prefix.
+func (server *Server) HandleFileSystem(prefix string, instance fs.FS) {
+	if strings.HasSuffix(prefix, "/") {
+		server.Router.Handle("GET "+prefix, http.StripPrefix(prefix, http.FileServerFS(instance)))
+		return
+	}
+	filename := path.Base(prefix)
+
+	server.Router.HandleFunc("GET "+prefix, func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFileFS(w, r, instance, filename)
+	})
 }
 
 func NewServer(host string, port int, name string, state *state.State, engine *templates.Engine) *Server {

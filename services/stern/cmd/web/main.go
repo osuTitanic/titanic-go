@@ -8,7 +8,58 @@ import (
 	"github.com/osuTitanic/titanic-go/services/stern/internal/routes"
 	"github.com/osuTitanic/titanic-go/services/stern/internal/server"
 	"github.com/osuTitanic/titanic-go/services/stern/internal/templates"
+	web "github.com/osuTitanic/titanic-go/services/stern/web"
 )
+
+func InitializeWebRoutes(server *server.Server) {
+	server.Handle("GET /", routes.Home)
+}
+
+func InitializeStaticRoutes(server *server.Server) {
+	css, err := web.StaticFS("/css")
+	if err != nil {
+		slog.Error("Failed to initialize static file system", "error", err)
+		os.Exit(1)
+	}
+	js, err := web.StaticFS("/js")
+	if err != nil {
+		slog.Error("Failed to initialize static file system", "error", err)
+		os.Exit(1)
+	}
+	images, err := web.StaticFS("/images")
+	if err != nil {
+		slog.Error("Failed to initialize static file system", "error", err)
+		os.Exit(1)
+	}
+	lib, err := web.StaticFS("/lib")
+	if err != nil {
+		slog.Error("Failed to initialize static file system", "error", err)
+		os.Exit(1)
+	}
+	webfonts, err := web.StaticFS("/webfonts")
+	if err != nil {
+		slog.Error("Failed to initialize static file system", "error", err)
+		os.Exit(1)
+	}
+	robots, err := web.StaticFS("/robots.txt")
+	if err != nil {
+		slog.Error("Failed to initialize static file system", "error", err)
+		os.Exit(1)
+	}
+	favicon, err := web.StaticFS("/favicon.ico")
+	if err != nil {
+		slog.Error("Failed to initialize static file system", "error", err)
+		os.Exit(1)
+	}
+
+	server.HandleFileSystem("/css/", css)
+	server.HandleFileSystem("/js/", js)
+	server.HandleFileSystem("/images/", images)
+	server.HandleFileSystem("/lib/", lib)
+	server.HandleFileSystem("/webfonts/", webfonts)
+	server.HandleFileSystem("/favicon.ico", favicon)
+	server.HandleFileSystem("/robots.txt", robots)
+}
 
 func main() {
 	app, err := state.NewState(".env")
@@ -25,6 +76,7 @@ func main() {
 	}
 
 	server := server.NewServer(app.Config.FrontendHost, app.Config.FrontendPort, "stern", app, engine)
-	server.Handle("GET /", routes.Home)
+	InitializeWebRoutes(server)
+	InitializeStaticRoutes(server)
 	server.Serve()
 }
