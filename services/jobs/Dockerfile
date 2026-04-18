@@ -31,7 +31,7 @@ FROM gcr.io/distroless/static-debian12:nonroot
 
 WORKDIR /app
 COPY --from=builder /out/jobs /app/jobs
-COPY schedule.example.json /app/schedule.json
+COPY ./services/jobs/schedule.example.json /app/schedule.json
 
 ENTRYPOINT ["/app/jobs"]
 CMD ["-file", "/app/schedule.json"]
