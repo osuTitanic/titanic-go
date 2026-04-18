@@ -18,6 +18,7 @@ func NewEngine(cfg *config.Config) (*Engine, error) {
 		embedfs.NewLoader("template", web.Templates),
 		jet.DevelopmentMode(cfg.Reload),
 	)
+	set.AddGlobalFunc("formatNumber", formatNumber)
 	return &Engine{Set: set}, nil
 }
 
