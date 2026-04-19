@@ -6,7 +6,6 @@ This module contains the shared authentication helpers used across Titanic servi
 - [Website sessions](#website-sessions)
 - [API access & refresh tokens](#api-tokens)
 - [CSRF tokens](#csrf-tokens)
-- [Cookie helpers](#cookie-helpers)
 - [Authorization parsing](#authorization-parsing)
 
 ## Usage
@@ -178,16 +177,6 @@ ok, err := store.Validate(context.Background(), user.Id, token)
 if err != nil || !ok {
 	return err
 }
-```
-
-### Cookie helpers
-
-The go standard library provides a simple common way of handling cookies, which we can use to create these helper functions:
-
-```go
-websiteCookie := authentication.NewWebsiteSessionCookie(app.Config, r, sessionId, 30*24*time.Hour)
-apiAccessCookie := authentication.NewAPIAccessCookie(app.Config, pair.AccessToken, 15*time.Minute)
-apiRefreshCookie := authentication.NewAPIRefreshCookie(app.Config, pair.RefreshToken, 30*24*time.Hour)
 ```
 
 ### Authorization parsing

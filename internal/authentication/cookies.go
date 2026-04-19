@@ -10,8 +10,6 @@ import (
 
 const (
 	WebsiteSessionCookieName = "session"
-	AccessTokenCookieName    = "access_token"
-	RefreshTokenCookieName   = "refresh_token"
 )
 
 func ResolveCookieDomain(cfg *config.Config) string {
@@ -49,32 +47,6 @@ func NewWebsiteSessionCookie(cfg *config.Config, request *http.Request, token st
 		MaxAge:   int(maxAge / time.Second),
 		Secure:   UseSecureCookies(cfg, request),
 		SameSite: http.SameSiteLaxMode,
-	}
-}
-
-func NewAPIAccessCookie(cfg *config.Config, token string, maxAge time.Duration) *http.Cookie {
-	return &http.Cookie{
-		Name:     AccessTokenCookieName,
-		Value:    token,
-		Path:     "/",
-		Domain:   ResolveCookieDomain(cfg),
-		MaxAge:   int(maxAge / time.Second),
-		HttpOnly: false,
-		Secure:   cfg != nil && cfg.EnableSsl,
-		SameSite: http.SameSiteStrictMode,
-	}
-}
-
-func NewAPIRefreshCookie(cfg *config.Config, token string, maxAge time.Duration) *http.Cookie {
-	return &http.Cookie{
-		Name:     RefreshTokenCookieName,
-		Value:    token,
-		Path:     "/",
-		Domain:   ResolveCookieDomain(cfg),
-		MaxAge:   int(maxAge / time.Second),
-		HttpOnly: true,
-		Secure:   cfg != nil && cfg.EnableSsl,
-		SameSite: http.SameSiteStrictMode,
 	}
 }
 
