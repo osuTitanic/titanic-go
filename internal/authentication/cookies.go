@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	WebsiteSessionCookieName = "session"
+	WebsiteSessionCookieName = "titanic_session"
 )
 
 func ResolveCookieDomain(cfg *config.Config) string {
