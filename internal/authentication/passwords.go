@@ -1,19 +1,30 @@
-package passwords
+package authentication
 
 import (
 	"crypto/md5"
+	"encoding/hex"
+	"maps"
+	"sync"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
+var (
+	passwordCache   = map[string]bool{}
+	passwordCacheMu sync.RWMutex
+)
+
+func PasswordMd5(password string) string {
+	sum := md5.Sum([]byte(password))
+	return hex.EncodeToString(sum[:])
+}
+
 func CreatePasswordHash(password string) (string, error) {
-	md5Hash := md5.Sum([]byte(password))
-	return CreatePasswordHashFromMd5(string(md5Hash[:]))
+	return CreatePasswordHashFromMd5(PasswordMd5(password))
 }
 
 func VerifyPasswordHash(password string, hash string) bool {
-	md5Hash := md5.Sum([]byte(password))
-	return VerifyPasswordHashFromMd5(string(md5Hash[:]), hash)
+	return VerifyPasswordHashFromMd5(PasswordMd5(password), hash)
 }
 
 func CreatePasswordHashFromMd5(md5 string) (string, error) {
@@ -24,17 +35,36 @@ func CreatePasswordHashFromMd5(md5 string) (string, error) {
 	return string(hashedBytes), err
 }
 
-func VerifyPasswordHashFromMd5(md5 string, hash string) bool {
-	if cached, exists := passwordCache[md5]; exists {
+func GetPasswordCache() map[string]bool {
+	passwordCacheMu.RLock()
+	defer passwordCacheMu.RUnlock()
+
+	cloned := make(map[string]bool, len(passwordCache))
+	maps.Copy(cloned, passwordCache)
+	return cloned
+}
+
+func ClearPasswordCache() {
+	passwordCacheMu.Lock()
+	passwordCache = map[string]bool{}
+	passwordCacheMu.Unlock()
+}
+
+func VerifyPasswordHashFromMd5(md5Hex string, hash string) bool {
+	cacheKey := md5Hex + ":" + hash
+
+	passwordCacheMu.RLock()
+	cached, exists := passwordCache[cacheKey]
+	passwordCacheMu.RUnlock()
+	if exists {
 		return cached
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(md5))
-	if err != nil {
-		passwordCache[md5] = false
-		return false
-	}
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(md5Hex))
+	ok := err == nil
 
-	passwordCache[md5] = true
-	return true
+	passwordCacheMu.Lock()
+	passwordCache[cacheKey] = ok
+	passwordCacheMu.Unlock()
+	return ok
 }
