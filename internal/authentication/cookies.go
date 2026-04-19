@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	AccessTokenCookieName  = "access_token"
-	RefreshTokenCookieName = "refresh_token"
+	WebsiteSessionCookieName = "session"
+	AccessTokenCookieName    = "access_token"
+	RefreshTokenCookieName   = "refresh_token"
 )
 
 func ResolveCookieDomain(cfg *config.Config) string {
@@ -37,24 +38,10 @@ func UseSecureCookies(cfg *config.Config, request *http.Request) bool {
 	return !cfg.GetAllowInsecureCookies()
 }
 
-func NewWebsiteAccessCookie(cfg *config.Config, request *http.Request, token string, maxAge time.Duration) *http.Cookie {
+func NewWebsiteSessionCookie(cfg *config.Config, request *http.Request, token string, maxAge time.Duration) *http.Cookie {
 	domain := ResolveCookieDomain(cfg)
 	return &http.Cookie{
-		Name:     AccessTokenCookieName,
-		Value:    token,
-		Path:     "/",
-		Domain:   domain,
-		HttpOnly: domain != "",
-		MaxAge:   int(maxAge / time.Second),
-		Secure:   UseSecureCookies(cfg, request),
-		SameSite: http.SameSiteLaxMode,
-	}
-}
-
-func NewWebsiteRefreshCookie(cfg *config.Config, request *http.Request, token string, maxAge time.Duration) *http.Cookie {
-	domain := ResolveCookieDomain(cfg)
-	return &http.Cookie{
-		Name:     RefreshTokenCookieName,
+		Name:     WebsiteSessionCookieName,
 		Value:    token,
 		Path:     "/",
 		Domain:   domain,
