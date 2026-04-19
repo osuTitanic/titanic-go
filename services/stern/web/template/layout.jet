@@ -9,7 +9,8 @@
     <link rel="apple-touch-icon" href="/images/logo/icon-192.png">
     <!-- TODO: add manifest -->
 
-    <!-- TODO: add API url dns-prefetch/preconnect tags -->
+    <link rel="dns-prefetch" href="{{ .Config.ApiBaseUrl() }}">
+    <link rel="preconnect" href="{{ .Config.ApiBaseUrl() }}" crossorigin>
     <link rel="dns-prefetch" href="https://cdn.socket.io">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
