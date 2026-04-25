@@ -34,6 +34,11 @@ func (r *HistoryRepository) DeletePlaysHistoryByUserMode(userId int, mode consta
 	return result.RowsAffected, result.Error
 }
 
+func (r *HistoryRepository) DeleteRankHistoryEntry(userId int, mode constants.Mode, timestamp time.Time) (int64, error) {
+	result := r.db.Where("user_id = ? AND mode = ? AND time = ?", userId, mode, timestamp).Delete(&schemas.RankHistory{})
+	return result.RowsAffected, result.Error
+}
+
 func (r *HistoryRepository) UpdatePlays(userId int, mode constants.Mode) error {
 	now := time.Now()
 	year, month, _ := now.Date()
@@ -144,6 +149,22 @@ func (r *HistoryRepository) FetchReplayHistoryAll(userId int, mode constants.Mod
 func (r *HistoryRepository) FetchRankHistory(userId int, mode constants.Mode, until time.Time) ([]*schemas.RankHistory, error) {
 	var history []*schemas.RankHistory
 	err := r.db.Where("user_id = ? AND mode = ? AND time > ?", userId, mode, until).
+		Order("time DESC").
+		Find(&history).Error
+	return history, err
+}
+
+func (r *HistoryRepository) FetchLastRankHistoryEntry(userId int, mode constants.Mode) (*schemas.RankHistory, error) {
+	var entry *schemas.RankHistory
+	err := r.db.Where("user_id = ? AND mode = ?", userId, mode).
+		Order("time DESC").
+		First(&entry).Error
+	return entry, err
+}
+
+func (r *HistoryRepository) FetchRecentRankHistoryEntries(userId int, mode constants.Mode, since time.Duration) ([]*schemas.RankHistory, error) {
+	var history []*schemas.RankHistory
+	err := r.db.Where("user_id = ? AND mode = ? AND time >= ?", userId, mode, time.Now().Add(-since)).
 		Order("time DESC").
 		Find(&history).Error
 	return history, err
