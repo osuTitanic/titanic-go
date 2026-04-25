@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/osuTitanic/titanic-go/internal/constants"
@@ -89,14 +91,29 @@ func (r *HistoryRepository) UpdateReplayViews(userId int, mode constants.Mode) e
 	return r.db.Create(entry).Error
 }
 
-func (r *HistoryRepository) UpdateRank(stats *schemas.Stats, country string, rankingsService *rankings.RankingsService) error {
-	globalRank, _ := rankingsService.GlobalRank(stats.UserId, stats.Mode)
-	countryRank, _ := rankingsService.CountryRank(stats.UserId, stats.Mode, country)
-	scoreRank, _ := rankingsService.ScoreRank(stats.UserId, stats.Mode)
-	ppv1Rank, _ := rankingsService.PPv1Rank(stats.UserId, stats.Mode)
+func (r *HistoryRepository) UpdateRank(stats *schemas.Stats, country string, rankingsService *rankings.RankingsService) (bool, error) {
+	globalRank, err := rankingsService.GlobalRank(stats.UserId, stats.Mode)
+	if err != nil {
+		return false, fmt.Errorf("failed to fetch global rank: %w", err)
+	}
+
+	countryRank, err := rankingsService.CountryRank(stats.UserId, stats.Mode, country)
+	if err != nil {
+		return false, fmt.Errorf("failed to fetch country rank: %w", err)
+	}
+
+	scoreRank, err := rankingsService.ScoreRank(stats.UserId, stats.Mode)
+	if err != nil {
+		return false, fmt.Errorf("failed to fetch score rank: %w", err)
+	}
+
+	ppv1Rank, err := rankingsService.PPv1Rank(stats.UserId, stats.Mode)
+	if err != nil {
+		return false, fmt.Errorf("failed to fetch ppv1 rank: %w", err)
+	}
 
 	if globalRank <= 0 || countryRank <= 0 || scoreRank <= 0 || ppv1Rank <= 0 {
-		return nil
+		return false, nil
 	}
 
 	entry := &schemas.RankHistory{
@@ -111,7 +128,10 @@ func (r *HistoryRepository) UpdateRank(stats *schemas.Stats, country string, ran
 		PPv1Rank:    ppv1Rank,
 		Time:        time.Now(),
 	}
-	return r.db.Create(entry).Error
+	if err := r.db.Create(entry).Error; err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func (r *HistoryRepository) FetchPlaysHistory(userId int, mode constants.Mode, until time.Time) ([]*schemas.PlayHistory, error) {
@@ -155,11 +175,17 @@ func (r *HistoryRepository) FetchRankHistory(userId int, mode constants.Mode, un
 }
 
 func (r *HistoryRepository) FetchLastRankHistoryEntry(userId int, mode constants.Mode) (*schemas.RankHistory, error) {
-	var entry *schemas.RankHistory
+	var entry schemas.RankHistory
 	err := r.db.Where("user_id = ? AND mode = ?", userId, mode).
 		Order("time DESC").
 		First(&entry).Error
-	return entry, err
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &entry, nil
 }
 
 func (r *HistoryRepository) FetchRecentRankHistoryEntries(userId int, mode constants.Mode, since time.Duration) ([]*schemas.RankHistory, error) {

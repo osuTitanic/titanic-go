@@ -11,6 +11,11 @@ import (
 
 // UpdateRanks updates rank history for all active users.
 func UpdateRanks(app *state.State, logger *slog.Logger) error {
+	if app.Config.FrozenRankUpdates {
+		logger.Info("Rank updates are frozen, skipping...")
+		return nil
+	}
+
 	criteria := map[string]any{
 		"restricted = ?": false,
 		"activated = ?":  true,
@@ -32,46 +37,48 @@ func UpdateRanks(app *state.State, logger *slog.Logger) error {
 				return fmt.Errorf("failed to fetch global rank for user %d mode %d: %w", user.Id, userStats.Mode, err)
 			}
 
-			peakRank, err := app.Repositories.Histories.FetchPeakGlobalRank(user.Id, userStats.Mode)
-			if err != nil {
-				return fmt.Errorf("failed to fetch peak rank for user %d mode %d: %w", user.Id, userStats.Mode, err)
-			}
-
 			// Check if rank has desynced from redis -> db & update if necessary
-			if userStats.Rank != globalRank {
+			rankChanged := userStats.Rank != globalRank
+			if rankChanged {
 				userStats.Rank = globalRank
 				if _, err := app.Repositories.Stats.Update(userStats, "rank"); err != nil {
 					return fmt.Errorf("failed to update current rank for user %d mode %d: %w", user.Id, userStats.Mode, err)
 				}
-
-				if !app.Config.FrozenRankUpdates {
-					if err := app.Repositories.Histories.UpdateRank(userStats, user.Country, app.Rankings); err != nil {
-						return fmt.Errorf("failed to update rank history for user %d mode %d: %w", user.Id, userStats.Mode, err)
-					}
-				}
-			}
-
-			if userStats.PeakRank != peakRank {
-				userStats.PeakRank = peakRank
-				if _, err := app.Repositories.Stats.Update(userStats, "peak_rank"); err != nil {
-					return fmt.Errorf("failed to update peak rank for user %d mode %d: %w", user.Id, userStats.Mode, err)
-				}
 			}
 
 			// We want at least 1 rank history update per day
-			needsHistoryUpdate := userRequiresHistoryUpdate(
+			needsHistoryUpdate, err := userRequiresHistoryUpdate(
 				user.Id,
 				userStats.Mode,
 				app,
 			)
-			if needsHistoryUpdate && !app.Config.FrozenRankUpdates {
-				if err := app.Repositories.Histories.UpdateRank(userStats, user.Country, app.Rankings); err != nil {
+			if err != nil {
+				return fmt.Errorf("failed to check rank history for user %d mode %d: %w", user.Id, userStats.Mode, err)
+			}
+
+			// If the rank changed, we always want a history update
+			needsHistoryUpdate = needsHistoryUpdate || rankChanged
+
+			if needsHistoryUpdate {
+				inserted, err := app.Repositories.Histories.UpdateRank(userStats, user.Country, app.Rankings)
+				if err != nil {
 					return fmt.Errorf("failed to update rank history for user %d mode %d: %w", user.Id, userStats.Mode, err)
 				}
-				logger.Info(
-					"Added rank history entry",
-					"user_id", user.Id, "mode", userStats.Mode,
-				)
+				if inserted {
+					logger.Info(
+						"Added rank history entry",
+						"user_id", user.Id, "mode", userStats.Mode,
+						"rank_changed", rankChanged, "daily_update", needsHistoryUpdate,
+					)
+				}
+			}
+
+			// Update peak rank if current rank is better than peak
+			if userStats.PeakRank <= 0 || globalRank < userStats.PeakRank {
+				userStats.PeakRank = globalRank
+				if _, err := app.Repositories.Stats.Update(userStats, "peak_rank"); err != nil {
+					return fmt.Errorf("failed to update peak rank for user %d mode %d: %w", user.Id, userStats.Mode, err)
+				}
 			}
 
 			// Keep only the most recent rank history entry per day to save storage space
@@ -96,15 +103,15 @@ func UpdateRanks(app *state.State, logger *slog.Logger) error {
 // A user needs to have at least 1 rank history update per day
 const RankHistoryUpdateInterval = 24 * 60 * 60
 
-func userRequiresHistoryUpdate(userId int, mode constants.Mode, app *state.State) bool {
+func userRequiresHistoryUpdate(userId int, mode constants.Mode, app *state.State) (bool, error) {
 	lastUpdate, err := app.Repositories.Histories.FetchLastRankHistoryEntry(userId, mode)
 	if err != nil {
-		return false
+		return false, err
 	}
 	if lastUpdate == nil {
-		return true
+		return true, nil
 	}
-	return time.Since(lastUpdate.Time) >= RankHistoryUpdateInterval*time.Second
+	return time.Since(lastUpdate.Time) >= RankHistoryUpdateInterval*time.Second, nil
 }
 
 func cleanupRankHistory(userId int, mode constants.Mode, app *state.State) error {
@@ -126,6 +133,8 @@ func cleanupRankHistory(userId int, mode constants.Mode, app *state.State) error
 		if err != nil {
 			return fmt.Errorf("failed to delete rank history entry %v: %w", entry.Time, err)
 		}
+		// TODO: Should this delete all but the highest ranked entry instead?
+		//       Currently not sure, but worth to consider for the future
 	}
 	return nil
 }
