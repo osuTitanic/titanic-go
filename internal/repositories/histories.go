@@ -188,9 +188,9 @@ func (r *HistoryRepository) FetchLastRankHistoryEntry(userId int, mode constants
 	return &entry, nil
 }
 
-func (r *HistoryRepository) FetchRecentRankHistoryEntries(userId int, mode constants.Mode, since time.Duration) ([]*schemas.RankHistory, error) {
+func (r *HistoryRepository) FetchRankHistoryEntriesBetween(userId int, mode constants.Mode, start, end time.Time) ([]*schemas.RankHistory, error) {
 	var history []*schemas.RankHistory
-	err := r.db.Where("user_id = ? AND mode = ? AND time >= ?", userId, mode, time.Now().Add(-since)).
+	err := r.db.Where("user_id = ? AND mode = ? AND time >= ? AND time < ?", userId, mode, start, end).
 		Order("time DESC").
 		Find(&history).Error
 	return history, err

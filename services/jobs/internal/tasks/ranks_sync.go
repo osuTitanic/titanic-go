@@ -100,9 +100,6 @@ func UpdateRanks(app *state.State, logger *slog.Logger) error {
 	return nil
 }
 
-// A user needs to have at least 1 rank history update per day
-const RankHistoryUpdateInterval = 24 * 60 * 60
-
 func userRequiresHistoryUpdate(userId int, mode constants.Mode, app *state.State) (bool, error) {
 	lastUpdate, err := app.Repositories.Histories.FetchLastRankHistoryEntry(userId, mode)
 	if err != nil {
@@ -111,15 +108,13 @@ func userRequiresHistoryUpdate(userId int, mode constants.Mode, app *state.State
 	if lastUpdate == nil {
 		return true, nil
 	}
-	return time.Since(lastUpdate.Time) >= RankHistoryUpdateInterval*time.Second, nil
+	return rankHistoryNeedsDailyUpdate(lastUpdate.Time, time.Now()), nil
 }
 
 func cleanupRankHistory(userId int, mode constants.Mode, app *state.State) error {
 	// We only keep one rank history entry per day
-	entries, err := app.Repositories.Histories.FetchRecentRankHistoryEntries(
-		userId, mode,
-		RankHistoryUpdateInterval*time.Second,
-	)
+	dayStart, dayEnd := rankHistoryDayBounds(time.Now())
+	entries, err := app.Repositories.Histories.FetchRankHistoryEntriesBetween(userId, mode, dayStart, dayEnd)
 	if err != nil {
 		return fmt.Errorf("failed to fetch recent rank history entries for user %d: %w", userId, err)
 	}
@@ -137,4 +132,14 @@ func cleanupRankHistory(userId int, mode constants.Mode, app *state.State) error
 		//       Currently not sure, but worth to consider for the future
 	}
 	return nil
+}
+
+func rankHistoryNeedsDailyUpdate(lastUpdate, now time.Time) bool {
+	dayStart, _ := rankHistoryDayBounds(now)
+	return lastUpdate.In(dayStart.Location()).Before(dayStart)
+}
+
+func rankHistoryDayBounds(t time.Time) (time.Time, time.Time) {
+	dayStart := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+	return dayStart, dayStart.AddDate(0, 0, 1)
 }
