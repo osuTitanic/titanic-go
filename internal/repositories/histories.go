@@ -116,6 +116,9 @@ func (r *HistoryRepository) UpdateRank(stats *schemas.Stats, country string, ran
 		return false, nil
 	}
 
+	// Hacky time collision avoidance
+	timeOffset := time.Millisecond * time.Duration(stats.Mode)
+
 	entry := &schemas.RankHistory{
 		UserId:      stats.UserId,
 		Mode:        stats.Mode,
@@ -126,7 +129,7 @@ func (r *HistoryRepository) UpdateRank(stats *schemas.Stats, country string, ran
 		CountryRank: countryRank,
 		ScoreRank:   scoreRank,
 		PPv1Rank:    ppv1Rank,
-		Time:        time.Now(),
+		Time:        time.Now().Add(timeOffset),
 	}
 	if err := r.db.Create(entry).Error; err != nil {
 		return false, err
